@@ -1,2 +1,61 @@
+# Secrets & local env (keep .env.example in repo)
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+wheels/
+pip-wheel-metadata/
+.venv/
+venv/
+ENV/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+.tox/
+.nox/
+hypothesis/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Logs & dumps
+*.log
+*.log.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+*.swp
+*.swo
+*~
+
+# Docs / misc
 *.docx
-/scripts
+
