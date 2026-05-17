@@ -33,6 +33,16 @@ Auth: **`/login`** and **`/register`**. Demo accounts (password `Demo1234`): `ma
 
 There is **no** Metrics page in the UI; observability is **`GET /api/v1/metrics`** only (see below).
 
+### Live demo (deployed)
+
+| Role | URL |
+|------|-----|
+| **Frontend** (Vercel) | [https://review-pulse-delta.vercel.app](https://review-pulse-delta.vercel.app) — login: `/login` |
+| **API** (Render) | [https://reviewpulse-7mgz.onrender.com](https://reviewpulse-7mgz.onrender.com) |
+| **OpenAPI / Swagger** | [https://reviewpulse-7mgz.onrender.com/docs](https://reviewpulse-7mgz.onrender.com/docs) |
+| **`VITE_API_URL` used at build** | `https://reviewpulse-7mgz.onrender.com/api/v1` |
+| **`CORS_ORIGINS` on Render** | `https://review-pulse-delta.vercel.app` |
+
 ### Screenshots (optional)
 
 If helpful for context: assignment brief + sidebar navigation can be attached alongside this document (e.g. exported from Cursor workspace image exports).
@@ -45,7 +55,7 @@ If helpful for context: assignment brief + sidebar navigation can be attached al
 4. **Compare** — select multiple books; table updates.
 5. **Search** — run a natural-language query; results render.
 6. **Digest** — per-book sections render.
-7. **Optional API check** — Open `http://localhost:8000/docs`, Authorize with JWT from login response, call **`GET /api/v1/metrics`**. Expect pipeline counts for your tenant; **`llm_cost` totals may be zero** unless you have run live ingestion that wrote `LLMUsage` rows (see Demo vs live LLM below).
+7. **Optional API check** — Open [Swagger on prod](https://reviewpulse-7mgz.onrender.com/docs) or `http://localhost:8000/docs` locally; Authorize with JWT from login response; call **`GET /api/v1/metrics`**. Expect pipeline counts for your tenant; **`llm_cost` totals may be zero** unless you have run live ingestion that wrote `LLMUsage` rows (see Demo vs live LLM below).
 
 ---
 
@@ -201,7 +211,11 @@ Use this when you need a **public URL** quickly and can skip async ingestion. **
 4. **Seed once** from a trusted machine with prod `DATABASE_URL`:  
    `cd backend && python -m scripts.seed_db`  
    (ensure `data/seed_reviews.json` exists — run `python scripts/seed_data.py` first if needed.)
-5. Build the frontend with **`VITE_API_URL`** set to your **public API base**, including `/api/v1`, e.g. `https://your-api.example.com/api/v1`. Production does not use the Vite dev proxy in [`frontend/vite.config.ts`](frontend/vite.config.ts).
+5. Build the frontend with **`VITE_API_URL`** set to your **public API base**, including `/api/v1`. **This deployment:** `https://reviewpulse-7mgz.onrender.com/api/v1`. Set **`CORS_ORIGINS`** on Render to the Vercel origin: `https://review-pulse-delta.vercel.app`. Production does not use the Vite dev proxy in [`frontend/vite.config.ts`](frontend/vite.config.ts).
+
+### Deployed URLs (reference)
+
+Same as [Live demo (deployed)](#live-demo-deployed) above: frontend **https://review-pulse-delta.vercel.app**, API **https://reviewpulse-7mgz.onrender.com**.
 
 ### What works vs what does not (honest)
 
@@ -225,7 +239,7 @@ Add **Redis**, a **Celery worker** process (same codebase, worker command), and 
 | Supabase Auth RS256 | HS256 JWT is the active path |
 | WebSocket job progress | Frontend polls `/jobs/{id}`; WebSocket not implemented |
 | Email delivery for digest | Digest API preview only; no SendGrid/Resend |
-| Production deployment | No checked-in Render/Vercel config in-repo; **read-only demo deploy playbook** is documented above |
+| Production deployment | **Live:** [review-pulse-delta.vercel.app](https://review-pulse-delta.vercel.app) + [reviewpulse-7mgz.onrender.com](https://reviewpulse-7mgz.onrender.com). No `render.yaml` / `vercel.json` in-repo; **read-only demo deploy playbook** is documented above |
 
 ---
 

@@ -23,7 +23,7 @@ Built as a take-home for Tweeds. Stack mirrors Tweeds' production environment: F
 ## Local Setup
 
 ### Prerequisites
-- Python 3.12+
+- Python 3.12+ (**avoid 3.14** for installs — many deps lack wheels yet)
 - Node.js 18+
 - Docker (for PostgreSQL + Redis)
 - Kaggle credentials (optional — for real review data)
@@ -284,6 +284,17 @@ ReviewPulse/
 
 ---
 
+## Hosting notes (Render)
+
+Render must use **Python 3.12.x**, not 3.14: newer Python triggers source builds for `pydantic-core` (Rust/maturin) and commonly fails with **read-only file system** during install.
+
+- Service **Root Directory** `backend` picks up [`backend/runtime.txt`](backend/runtime.txt) (`python-3.12.8`).
+- Alternatively set Render env **`PYTHON_VERSION`** = `3.12.8`.
+
+Commit `runtime.txt`, redeploy, and confirm build logs show **Python 3.12**, not 3.14.
+
+---
+
 ## Known Limitations / Future Work
 
 | Limitation | Notes |
@@ -292,7 +303,7 @@ ReviewPulse/
 | HS256 JWT instead of Supabase RS256 | Auth is self-contained and fully functional. Supabase integration is the right long-term path but adds a moving part |
 | No WebSocket for job progress | Frontend polls `/jobs/{id}` every 2 seconds — reliable but not real-time |
 | Email delivery for digest | Digest endpoint is fully functional as a preview; wiring to SendGrid/Resend not implemented |
-| Deployment | Not wired to a specific host in-repo; for a **fast public read-only demo** (Postgres + pgvector + API + static UI, no Redis/Celery), see **[Read-only demo deployment (minimal time)](SUBMISSION.md#read-only-demo-deployment-minimal-time)** in `SUBMISSION.md` |
+| Deployment | **Live demo:** [review-pulse-delta.vercel.app](https://review-pulse-delta.vercel.app) (frontend) · [reviewpulse-7mgz.onrender.com](https://reviewpulse-7mgz.onrender.com) (API). Playbook: **[Read-only demo deployment](SUBMISSION.md#read-only-demo-deployment-minimal-time)** in `SUBMISSION.md` |
 
 ---
 
