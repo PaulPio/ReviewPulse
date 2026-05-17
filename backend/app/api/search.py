@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select, text
+from sqlalchemy import literal_column, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_author
@@ -39,7 +39,7 @@ async def semantic_search(
         Review.sentiment,
         Review.review_date,
         Review.rating,
-        text(f"1 - (embedding <=> '{embedding_literal}'::vector) as score"),
+        literal_column(f"1 - (embedding::vector(1536) <=> '{embedding_literal}'::vector(1536))").label("score"),
     ).where(
         Review.author_id == current_author.id,
         Review.embedding.isnot(None),
@@ -48,7 +48,7 @@ async def semantic_search(
     if request.book_ids:
         query = query.where(Review.book_id.in_(request.book_ids))
 
-    query = query.order_by(text(f"embedding <=> '{embedding_literal}'::vector")).limit(request.top_k)
+    query = query.order_by(text(f"embedding::vector(1536) <=> '{embedding_literal}'::vector(1536)")).limit(request.top_k)
 
     result = await db.execute(query)
     rows = result.all()

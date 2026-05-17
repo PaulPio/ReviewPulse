@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { Review, SentimentTimeline, ThemeCount } from '@/types'
+import type { ReviewPage, SentimentTimeline, ThemeCount } from '@/types'
 
 interface ReviewsParams {
   bookId: string
@@ -21,10 +21,7 @@ export function useReviews(params: ReviewsParams) {
 
   return useQuery({
     queryKey: ['reviews', bookId, filters],
-    queryFn: () =>
-      api.get<{ data: Review[]; meta: { total: number } }>(
-        `/books/${bookId}/reviews?${query.toString()}`
-      ),
+    queryFn: () => api.get<ReviewPage>(`/books/${bookId}/reviews?${query.toString()}`),
     enabled: !!bookId,
   })
 }

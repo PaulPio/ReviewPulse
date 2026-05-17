@@ -1,19 +1,16 @@
 """
 Text embedding service for semantic search (F4).
 
-We use OpenAI's text-embedding-3-small (1536 dimensions) via the OpenAI SDK.
-The resulting float32 vectors are stored in the Review.embedding column
-(PostgreSQL ARRAY(Float)) and searched using cosine similarity in raw SQL.
+Supports two providers, both via the OpenAI SDK (compatible API):
+  - openai     : direct OpenAI API  (model: "text-embedding-3-small")
+  - openrouter : OpenRouter gateway (model: "openai/text-embedding-3-small")
 
-Why not pgvector's ORM column type?
-------------------------------------
-pgvector's SQLAlchemy integration requires registering a custom type and
-running `CREATE EXTENSION vector` before the ORM can map it. To keep the
-setup simpler (and avoid a pgvector-specific ORM dependency), we:
-  1. Store embeddings as ARRAY(Float) in the ORM model.
-  2. Cast to ::vector in raw SQL queries for cosine similarity search.
-This is fully compatible with pgvector and avoids version pinning on the
-pgvector Python package's ORM integration.
+Set EMBEDDING_PROVIDER=openrouter in .env to route through OpenRouter.
+The model name is automatically prefixed with "openai/" when using OpenRouter
+if it isn't already.
+
+Vectors are 1536-dimensional float32, stored as ARRAY(Float) in PostgreSQL
+and cast to ::vector for cosine similarity search.
 """
 
 from __future__ import annotations
@@ -32,39 +29,58 @@ _client: openai.AsyncOpenAI | None = None
 def _get_client() -> openai.AsyncOpenAI:
     global _client
     if _client is None:
-        _client = openai.AsyncOpenAI(api_key=settings.openai_api_key)
+        if settings.embedding_provider == "openrouter":
+            _client = openai.AsyncOpenAI(
+                api_key=settings.openrouter_api_key,
+                base_url="https://openrouter.ai/api/v1",
+                default_headers={
+                    "HTTP-Referer": "https://reviewpulse.app",
+                    "X-Title": "ReviewPulse",
+                },
+            )
+        else:
+            _client = openai.AsyncOpenAI(api_key=settings.openai_api_key)
     return _client
+
+
+def _resolve_model() -> str:
+    """OpenRouter requires the 'openai/' provider prefix on the model slug."""
+    model = settings.embedding_model
+    if settings.embedding_provider == "openrouter" and not model.startswith("openai/"):
+        return f"openai/{model}"
+    return model
 
 
 async def embed_text(text: str) -> tuple[list[float], int, int]:
     """
     Embed *text* and return (vector, prompt_tokens, cost_usd_micros).
 
-    The text is truncated to 8191 tokens (model limit) by the SDK automatically.
-    Raises openai.OpenAIError on failure (caller should catch and skip embedding).
+    Raises openai.OpenAIError on failure — caller should catch and skip.
     """
     client = _get_client()
+    model = _resolve_model()
     try:
         resp = await client.embeddings.create(
-            model=settings.embedding_model,
+            model=model,
             input=text,
             dimensions=settings.embedding_dimensions,
         )
         vector = resp.data[0].embedding
         tokens = resp.usage.prompt_tokens
         cost_micros, _ = calculate_cost_usd_micros(
-            provider="openai",
-            model=settings.embedding_model,
+            provider=settings.embedding_provider,
+            model=model,
             prompt_tokens=tokens,
             completion_tokens=0,
         )
         logger.debug(
             "embedding.created",
-            model=settings.embedding_model,
+            provider=settings.embedding_provider,
+            model=model,
             tokens=tokens,
             dimensions=len(vector),
         )
         return vector, tokens, cost_micros
     except openai.OpenAIError as exc:
-        logger.error("embedding.failed", error=str(exc))
+        logger.error("embedding.failed", provider=settings.embedding_provider, error=str(exc))
         raise

@@ -107,7 +107,9 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------ #
     # Max reviews to generate per book in synthetic mode
     synthetic_reviews_per_book: int = 50
-    # Embedding model for pgvector (tiktoken-compatible)
+    # Embedding provider: "openai" (direct) or "openrouter" (via gateway)
+    embedding_provider: Literal["openai", "openrouter"] = "openai"
+    # Model slug — for OpenRouter prefix with "openai/", e.g. "openai/text-embedding-3-small"
     embedding_model: str = "text-embedding-3-small"
     embedding_dimensions: int = 1536
 

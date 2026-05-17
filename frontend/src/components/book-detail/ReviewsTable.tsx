@@ -22,7 +22,7 @@ export default function ReviewsTable({ reviews }: Props) {
           {reviews.map(review => (
             <tr key={review.id} className="border-b border-border last:border-0">
               <td className="py-3 pr-4 max-w-md">
-                <p className="truncate">{review.summary || review.review_text.slice(0, 100)}</p>
+                <p className="truncate">{review.summary || review.body.slice(0, 100)}</p>
                 {review.is_actionable && (
                   <Badge variant="mixed" className="mt-1">Actionable</Badge>
                 )}
@@ -30,7 +30,9 @@ export default function ReviewsTable({ reviews }: Props) {
                   <Badge variant="negative" className="mt-1 ml-1">AI Flagged</Badge>
                 )}
               </td>
-              <td className="py-3 pr-4">{'★'.repeat(review.rating)}</td>
+              <td className="py-3 pr-4">
+                {review.rating === null ? '—' : '★'.repeat(review.rating)}
+              </td>
               <td className="py-3 pr-4">
                 {review.sentiment && (
                   <Badge variant={review.sentiment as 'positive' | 'mixed' | 'negative'}>
@@ -40,13 +42,15 @@ export default function ReviewsTable({ reviews }: Props) {
               </td>
               <td className="py-3 pr-4">
                 <div className="flex flex-wrap gap-1">
-                  {review.themes.slice(0, 3).map(theme => (
+                  {(review.themes ?? []).slice(0, 3).map(theme => (
                     <Badge key={theme} variant="outline">{theme}</Badge>
                   ))}
                 </div>
               </td>
               <td className="py-3 text-muted-foreground whitespace-nowrap">
-                {new Date(review.review_date).toLocaleDateString()}
+                {review.review_date
+                  ? new Date(review.review_date).toLocaleDateString()
+                  : '—'}
               </td>
             </tr>
           ))}

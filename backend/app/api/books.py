@@ -84,6 +84,7 @@ async def create_book(
     )
     db.add(book)
     await db.flush()
+    await db.refresh(book)
     return BookOut.model_validate(book)
 
 

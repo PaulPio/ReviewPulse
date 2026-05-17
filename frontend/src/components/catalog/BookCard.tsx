@@ -7,7 +7,17 @@ interface BookCardProps {
   book: Book
 }
 
+function dominantSentiment(book: Book): 'positive' | 'mixed' | 'negative' | null {
+  const total = book.sentiment_positive + book.sentiment_mixed + book.sentiment_negative
+  if (total === 0) return null
+  if (book.sentiment_positive >= book.sentiment_mixed && book.sentiment_positive >= book.sentiment_negative) return 'positive'
+  if (book.sentiment_negative > book.sentiment_mixed) return 'negative'
+  return 'mixed'
+}
+
 export default function BookCard({ book }: BookCardProps) {
+  const sentiment = dominantSentiment(book)
+
   return (
     <Link to={`/books/${book.id}`}>
       <Card className="transition-shadow hover:shadow-md">
@@ -20,12 +30,16 @@ export default function BookCard({ book }: BookCardProps) {
               <h3 className="font-medium truncate">{book.title}</h3>
               <p className="text-sm text-muted-foreground mt-1">
                 {book.total_reviews} reviews
+                {book.avg_rating !== null && ` · ${book.avg_rating.toFixed(1)}★`}
               </p>
-              {book.avg_sentiment_score !== null && (
+              {sentiment && (
                 <div className="mt-2 flex gap-1">
-                  <Badge variant={book.avg_sentiment_score > 0.6 ? 'positive' : book.avg_sentiment_score > 0.4 ? 'mixed' : 'negative'}>
-                    {book.avg_sentiment_score > 0.6 ? 'Positive' : book.avg_sentiment_score > 0.4 ? 'Mixed' : 'Negative'}
+                  <Badge variant={sentiment}>
+                    {sentiment.charAt(0).toUpperCase() + sentiment.slice(1)}
                   </Badge>
+                  {book.actionable_count > 0 && (
+                    <Badge variant="mixed">{book.actionable_count} actionable</Badge>
+                  )}
                 </div>
               )}
             </div>

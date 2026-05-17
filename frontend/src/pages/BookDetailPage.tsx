@@ -55,8 +55,8 @@ export default function BookDetailPage() {
           <CardTitle>Reviews</CardTitle>
         </CardHeader>
         <CardContent>
-          {reviewsData?.data && reviewsData.data.length > 0 ? (
-            <ReviewsTable reviews={reviewsData.data} />
+          {reviewsData?.items && reviewsData.items.length > 0 ? (
+            <ReviewsTable reviews={reviewsData.items} />
           ) : (
             <p className="text-sm text-muted-foreground">No reviews yet</p>
           )}

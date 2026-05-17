@@ -10,7 +10,7 @@ export default function Header() {
       <div className="ml-auto flex items-center gap-4">
         <span className="text-sm text-muted-foreground">{user?.email}</span>
         <button
-          onClick={signOut}
+          onClick={() => { signOut(); globalThis.location.assign('/login') }}
           className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           <LogOut className="h-4 w-4" />
