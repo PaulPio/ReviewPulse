@@ -1,0 +1,9 @@
+# Render.com Procfile
+# Three process types needed in production:
+#   web    — FastAPI HTTP server (Uvicorn with 2 workers)
+#   worker — Celery task worker (processes ingestion pipeline)
+#   beat   — Celery Beat scheduler (fires scheduled refresh)
+
+web: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2 --proxy-headers
+worker: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4 --pool=solo
+beat: celery -A app.workers.celery_app beat --loglevel=info

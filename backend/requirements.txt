@@ -1,0 +1,28 @@
+# Python 3.12 or 3.13 recommended. 3.14 is not supported yet (pydantic-core, asyncpg,
+# greenlet, tiktoken lack compatible wheels / PyO3 bindings).
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+sqlalchemy[asyncio]==2.0.35
+asyncpg==0.29.0
+alembic==1.13.2
+pydantic==2.9.2
+pydantic-settings==2.5.2
+celery[redis]==5.4.0
+redis==5.1.1
+httpx==0.27.2
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+structlog==24.4.0
+pgvector==0.3.4
+tiktoken==0.7.0
+tenacity==9.0.0
+python-multipart==0.0.9
+supabase==2.9.1
+anthropic==0.34.2
+openai==1.47.0
+google-generativeai==0.8.3
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-httpx==0.32.0
+factory-boy==3.3.1
+greenlet==3.1.1
