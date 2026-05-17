@@ -8,8 +8,15 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import AnyHttpUrl, Field, PostgresDsn, RedisDsn, field_validator
+from pydantic import AnyHttpUrl, Field, TypeAdapter, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _strip_trailing_dotenv_comment(value: object) -> object:
+    """Strip accidental `VAR=x # doc` tails from merged .env values."""
+    if isinstance(value, str) and " #" in value:
+        return value.split(" #", 1)[0].strip()
+    return value
 
 
 class Settings(BaseSettings):
@@ -18,6 +25,8 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+        # Empty env vars (e.g. CORS_ORIGINS=) skip JSON decoding for typed list fields elsewhere
+        env_ignore_empty=True,
     )
 
     # ------------------------------------------------------------------ #
@@ -32,8 +41,8 @@ class Settings(BaseSettings):
     # API
     # ------------------------------------------------------------------ #
     api_v1_prefix: str = "/api/v1"
-    # Comma-separated list of allowed origins for CORS
-    cors_origins: list[AnyHttpUrl] = Field(default_factory=list)
+    # Read as plain string — pydantic-settings JSON-decodes list fields from .env otherwise.
+    cors_origins_raw: str = Field(default="", validation_alias="CORS_ORIGINS")
 
     # ------------------------------------------------------------------ #
     # Database
@@ -114,15 +123,43 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     sentry_dsn: str = ""
 
-    # ------------------------------------------------------------------ #
-    # Validators
-    # ------------------------------------------------------------------ #
-    @field_validator("cors_origins", mode="before")
+    @field_validator("environment", "debug", mode="before")
     @classmethod
-    def parse_cors(cls, v: str | list) -> list:
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+    def strip_inline_comments_env_flags(cls, v: object) -> object:
+        return _strip_trailing_dotenv_comment(v)
+
+    @field_validator("llm_provider", mode="before")
+    @classmethod
+    def strip_inline_comments_llm_primary(cls, v: object) -> object:
+        return _strip_trailing_dotenv_comment(v)
+
+    @field_validator("llm_fallback_provider", mode="before")
+    @classmethod
+    def coerce_llm_fallback_from_env(cls, v: object) -> object:
+        """Mis-copied `.env` lines sometimes put `# ...` inside the variable value."""
+        if not isinstance(v, str):
+            return v
+        s = _strip_trailing_dotenv_comment(v)
+        if not isinstance(s, str):
+            return s
+        s = s.strip()
+        if not s or s.startswith("#"):
+            return None
+        return s
+
+    # ------------------------------------------------------------------ #
+    # Derived
+    # ------------------------------------------------------------------ #
+    @computed_field
+    @property
+    def cors_origins(self) -> list[AnyHttpUrl]:
+        raw = self.cors_origins_raw.strip()
+        if not raw:
+            return []
+        if raw.startswith("["):
+            return TypeAdapter(list[AnyHttpUrl]).validate_json(raw)
+        parts = [o.strip() for o in raw.split(",") if o.strip()]
+        return TypeAdapter(list[AnyHttpUrl]).validate_python(parts)
 
 
 @lru_cache

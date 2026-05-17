@@ -1,26 +1,20 @@
-import { supabase } from './supabase'
+import { getToken } from '@/hooks/useAuth'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session?.access_token) return {}
-  return { Authorization: `Bearer ${session.access_token}` }
-}
-
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const headers = await getAuthHeaders()
+  const token = getToken()
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   })
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }))
-    throw new Error(error.error?.message || error.message || 'Request failed')
+    throw new Error(error.detail || error.message || 'Request failed')
   }
   return res.json()
 }
