@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { Book } from '@/types'
+import type { Book, WhatsNew } from '@/types'
 
 export function useBooks() {
   return useQuery({
@@ -23,5 +23,12 @@ export function useAddBook() {
     mutationFn: (data: { title: string; isbn?: string; amazon_url?: string }) =>
       api.post<Book>('/books', data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['books'] }),
+  })
+}
+
+export function useWhatsNew() {
+  return useQuery({
+    queryKey: ['whats-new'],
+    queryFn: () => api.get<WhatsNew>('/whats-new'),
   })
 }

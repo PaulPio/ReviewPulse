@@ -110,3 +110,17 @@ export interface WhatsNew {
   actionable_reviews: { id: string; book_id: string; summary: string | null; rating: number | null }[]
   ai_flagged_reviews: { id: string; book_id: string; summary: string | null; rating: number | null }[]
 }
+
+export interface DigestBook {
+  book_id: string
+  book_title: string
+  sentiment_summary: string
+  overall_sentiment_trend: 'improving' | 'declining' | 'stable' | null
+  actionable_highlights: string[]
+  ai_flagged_alert: string | null
+}
+
+export interface DigestResponse {
+  generated_at: string
+  books: DigestBook[]
+}

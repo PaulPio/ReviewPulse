@@ -201,18 +201,102 @@ async def whats_new(
     ai_flagged = ai_flagged_result.scalars().all()
 
     return {
-        "data": {
-            "new_reviews_count": new_count,
-            "since": since.isoformat(),
-            "actionable_reviews": [
-                {"id": str(r.id), "book_id": str(r.book_id), "summary": r.summary, "rating": r.rating}
-                for r in actionable
-            ],
-            "ai_flagged_reviews": [
-                {"id": str(r.id), "book_id": str(r.book_id), "summary": r.summary, "rating": r.rating}
-                for r in ai_flagged
-            ],
-        }
+        "new_reviews_count": new_count,
+        "since": since.isoformat(),
+        "actionable_reviews": [
+            {"id": str(r.id), "book_id": str(r.book_id), "summary": r.summary, "rating": r.rating}
+            for r in actionable
+        ],
+        "ai_flagged_reviews": [
+            {"id": str(r.id), "book_id": str(r.book_id), "summary": r.summary, "rating": r.rating}
+            for r in ai_flagged
+        ],
+    }
+
+
+_DIGEST_PERIOD_DAYS = 90
+
+
+def _sentiment_trend(pos: int, total: int, prior_pos: int, prior_total: int) -> str:
+    this_pct  = round(pos / total * 100)            if total       > 0 else 0
+    prior_pct = round(prior_pos / prior_total * 100) if prior_total > 0 else 0
+    if this_pct > prior_pct + 5:
+        return "improving"
+    if this_pct < prior_pct - 5:
+        return "declining"
+    return "stable"
+
+
+def _ai_alert(ai_flagged: int, total: int) -> str | None:
+    rate = round(ai_flagged / total * 100, 1) if total else 0
+    if rate > 15:
+        return (
+            f"{rate}% of recent reviews appear AI-generated — "
+            "consider reporting flagged reviews to Amazon."
+        )
+    return None
+
+
+async def _book_digest_entry(
+    book: Book,
+    db: AsyncSession,
+    period_start: datetime,
+    prior_start: datetime,
+) -> dict | None:
+    bstats = await db.execute(
+        select(
+            func.count(Review.id).label("total"),
+            func.count(Review.id).filter(Review.sentiment == "positive").label("positive"),
+            func.count(Review.id).filter(Review.is_actionable == True).label("actionable"),  # noqa: E712
+            func.count(Review.id).filter(Review.is_ai_generated == True).label("ai_flagged"),  # noqa: E712
+        ).where(
+            Review.book_id == book.id,
+            Review.review_date >= period_start,
+            Review.sentiment.isnot(None),
+        )
+    )
+    brow = bstats.one()
+    total = brow.total or 0
+    if total == 0:
+        return None
+
+    pstats = await db.execute(
+        select(
+            func.count(Review.id).label("total"),
+            func.count(Review.id).filter(Review.sentiment == "positive").label("positive"),
+        ).where(
+            Review.book_id == book.id,
+            Review.review_date >= prior_start,
+            Review.review_date < period_start,
+            Review.sentiment.isnot(None),
+        )
+    )
+    prow = pstats.one()
+
+    actionable_q = await db.execute(
+        select(Review.actionable_reason)
+        .where(
+            Review.book_id == book.id,
+            Review.review_date >= period_start,
+            Review.is_actionable == True,  # noqa: E712
+            Review.actionable_reason.isnot(None),
+        )
+        .limit(3)
+    )
+    actionable_reasons = [r for (r,) in actionable_q.all() if r]
+
+    pos = brow.positive or 0
+    pos_pct = round(pos / total * 100)
+
+    return {
+        "book_id": str(book.id),
+        "book_title": book.title,
+        "sentiment_summary": (
+            f"{pos_pct}% positive ({pos}/{total} reviews in last {_DIGEST_PERIOD_DAYS} days)"
+        ),
+        "overall_sentiment_trend": _sentiment_trend(pos, total, prow.positive or 0, prow.total or 0),
+        "actionable_highlights": actionable_reasons,
+        "ai_flagged_alert": _ai_alert(brow.ai_flagged or 0, total),
     }
 
 
@@ -221,154 +305,25 @@ async def weekly_digest(
     current_author: Author = Depends(get_current_author),
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Weekly digest preview (F10).
+    """Weekly digest preview (F10). Uses review_date so seeded demo data is always visible."""
+    now          = datetime.now(timezone.utc)
+    period_start = now - timedelta(days=_DIGEST_PERIOD_DAYS)
+    prior_start  = now - timedelta(days=_DIGEST_PERIOD_DAYS * 2)
 
-    Returns the data that would be emailed to the author each Monday.
-    Structured for easy rendering as an HTML email or plain text summary.
-
-    What makes this digest useful (not generic):
-    - Per-book breakdown so the author sees which title needs attention
-    - Actionable highlights with specific reasons, not just counts
-    - AI-flagged rate spike alert if the rate jumped >10% this week
-    - Cost spend for the week (authors on a budget care about this)
-    """
-    now = datetime.now(timezone.utc)
-    one_week_ago = now - timedelta(days=7)
-    two_weeks_ago = now - timedelta(days=14)
-
-    # Get all books for this author
     books_result = await db.execute(
         select(Book).where(Book.author_id == current_author.id)
     )
     books = books_result.scalars().all()
 
-    # Overall this-week stats
-    overall_stats = await db.execute(
-        select(
-            func.count(Review.id).label("total"),
-            func.count(Review.id).filter(Review.sentiment == "positive").label("positive"),
-            func.count(Review.id).filter(Review.sentiment == "negative").label("negative"),
-            func.count(Review.id).filter(Review.is_ai_generated == True).label("ai_flagged"),  # noqa: E712
-            func.avg(Review.rating).label("avg_rating"),
-        ).where(
-            Review.author_id == current_author.id,
-            Review.created_at >= one_week_ago,
-        )
-    )
-    overall = overall_stats.one()
-
-    # Prior week for trend comparison
-    prior_stats = await db.execute(
-        select(
-            func.count(Review.id).label("total"),
-            func.count(Review.id).filter(Review.sentiment == "positive").label("positive"),
-        ).where(
-            Review.author_id == current_author.id,
-            Review.created_at >= two_weeks_ago,
-            Review.created_at < one_week_ago,
-        )
-    )
-    prior = prior_stats.one()
-
-    # Per-book sections
     book_sections = []
     for book in books:
-        book_stats = await db.execute(
-            select(
-                func.count(Review.id).label("total"),
-                func.count(Review.id).filter(Review.sentiment == "positive").label("positive"),
-                func.count(Review.id).filter(Review.sentiment == "negative").label("negative"),
-                func.count(Review.id).filter(Review.is_actionable == True).label("actionable"),  # noqa: E712
-                func.avg(Review.rating).label("avg_rating"),
-            ).where(
-                Review.book_id == book.id,
-                Review.created_at >= one_week_ago,
-            )
-        )
-        brow = book_stats.one()
-        if (brow.total or 0) == 0:
-            continue
-
-        # Top actionable highlights
-        actionable_q = await db.execute(
-            select(Review.actionable_reason)
-            .where(
-                Review.book_id == book.id,
-                Review.created_at >= one_week_ago,
-                Review.is_actionable == True,  # noqa: E712
-                Review.actionable_reason.isnot(None),
-            )
-            .limit(3)
-        )
-        actionable_reasons = [r for (r,) in actionable_q.all() if r]
-
-        total = brow.total or 0
-        pos = brow.positive or 0
-        neg = brow.negative or 0
-        pos_pct = round(pos / total * 100) if total else 0
-
-        book_sections.append({
-            "book_id": str(book.id),
-            "book_title": book.title,
-            "new_reviews": total,
-            "avg_rating": round(brow.avg_rating, 1) if brow.avg_rating else None,
-            "sentiment_summary": f"{pos_pct}% positive ({pos}/{total} reviews)",
-            "actionable_count": brow.actionable or 0,
-            "actionable_highlights": actionable_reasons,
-        })
-
-    # AI-flagged spike alert
-    ai_flagged_rate_this_week = (
-        round((overall.ai_flagged or 0) / overall.total * 100, 1)
-        if (overall.total or 0) > 0
-        else 0.0
-    )
-    ai_alert = None
-    if ai_flagged_rate_this_week > 15:
-        ai_alert = (
-            f"AI-generated review rate is {ai_flagged_rate_this_week}% this week — "
-            "consider reporting flagged reviews to Amazon."
-        )
-
-    # Overall trend
-    this_pos_pct = round((overall.positive or 0) / overall.total * 100) if (overall.total or 0) > 0 else 0
-    prior_pos_pct = round((prior.positive or 0) / prior.total * 100) if (prior.total or 0) > 0 else 0
-    if this_pos_pct > prior_pos_pct + 5:
-        trend = "improving"
-    elif this_pos_pct < prior_pos_pct - 5:
-        trend = "declining"
-    else:
-        trend = "stable"
-
-    highlights = []
-    if overall.total:
-        highlights.append(f"{overall.total} new reviews this week")
-    if overall.positive:
-        highlights.append(f"{overall.positive} positive ({this_pos_pct}%)")
-    if overall.negative:
-        highlights.append(f"{overall.negative} reviews need attention")
-    if trend == "improving":
-        highlights.append(f"Sentiment up {this_pos_pct - prior_pos_pct}pp vs last week")
-    elif trend == "declining":
-        highlights.append(f"Sentiment down {prior_pos_pct - this_pos_pct}pp vs last week — investigate")
+        entry = await _book_digest_entry(book, db, period_start, prior_start)
+        if entry:
+            book_sections.append(entry)
 
     return {
-        "data": {
-            "author_name": current_author.display_name,
-            "period_start": one_week_ago.date().isoformat(),
-            "period_end": now.date().isoformat(),
-            "total_new_reviews": overall.total or 0,
-            "overall_sentiment_trend": trend,
-            "highlights": highlights,
-            "books": book_sections,
-            "ai_flagged_alert": ai_alert,
-            "summary": (
-                f"You received {overall.total or 0} new reviews this week. "
-                f"Sentiment is {trend}. "
-                f"Average rating: {round(overall.avg_rating, 1) if overall.avg_rating else 'N/A'}/5."
-            ),
-        }
+        "generated_at": now.isoformat(),
+        "books": book_sections,
     }
 
 

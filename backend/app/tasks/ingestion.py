@@ -35,6 +35,7 @@ so the dashboard can show "12/50 processed, 2 failed: [details]".
 from __future__ import annotations
 
 import asyncio
+import time
 import json
 from datetime import datetime, timezone
 from typing import Any
@@ -88,6 +89,7 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
         job.started_at = datetime.now(timezone.utc)
         job.celery_task_id = celery_task_id
         await db.commit()
+        t_start = time.perf_counter()
 
         logger.info(
             "ingestion.started",
@@ -107,6 +109,7 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
             logger.error("ingestion.fetch_failed", job_id=job_id, error=str(exc))
             await _fail_job(db, job, str(exc))
             return {"status": "failed"}
+        t_after_generate = time.perf_counter()
 
         # --- 4. Bulk-insert with idempotency ---
         inserted_count = 0
@@ -131,6 +134,7 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
             inserted_count += result.rowcount or 0
 
         await db.commit()
+        t_after_insert = time.perf_counter()
 
         logger.info(
             "ingestion.reviews_inserted",
@@ -155,6 +159,7 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
         error_details: list[dict] = []
 
         for review in unanalysed:
+            t_rev_start = time.perf_counter()
             try:
                 analysis, llm_resp = await analyze_review(
                     review_body=review.body,
@@ -254,6 +259,13 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
                     error=str(exc),
                 )
                 await db.commit()
+            logger.debug(
+                "ingestion.review_timing",
+                job_id=job_id,
+                review_id=str(review.id),
+                elapsed_s=round(time.perf_counter() - t_rev_start, 2),
+            )
+        t_after_analysis = time.perf_counter()
 
         # --- 6. Finalise job ---
         job.completed_at = datetime.now(timezone.utc)
@@ -268,6 +280,16 @@ async def _run_pipeline(job_id: str, celery_task_id: str) -> dict[str, Any]:
             job.status = "partial"
 
         await db.commit()
+        t_after_finalize = time.perf_counter()
+        logger.info(
+            "ingestion.timing",
+            job_id=job_id,
+            generate_s=round(t_after_generate - t_start, 2),
+            insert_s=round(t_after_insert - t_after_generate, 2),
+            analysis_s=round(t_after_analysis - t_after_insert, 2),
+            finalize_s=round(t_after_finalize - t_after_analysis, 2),
+            total_pipeline_s=round(t_after_finalize - t_start, 2),
+        )
 
         logger.info(
             "ingestion.finished",
