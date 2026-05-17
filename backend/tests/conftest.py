@@ -20,14 +20,16 @@ Running tests
 
 from __future__ import annotations
 
-import asyncio
 import uuid
 from typing import AsyncGenerator
+
+import asyncio
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 from app.core.security import create_access_token, hash_password
@@ -45,7 +47,11 @@ TEST_DATABASE_URL = (
     else _db_url + "_test"
 )
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+# NullPool: never reuse connections across tests. Each async session opens its
+# own connection on the current event loop and closes it on session exit. This
+# prevents asyncpg "attached to a different loop" errors when pytest-asyncio
+# creates a fresh function-scoped event loop per test.
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(
     bind=test_engine,
     class_=AsyncSession,
@@ -54,30 +60,42 @@ TestSessionLocal = async_sessionmaker(
 )
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+@pytest.fixture(scope="session", autouse=True)
+def create_tables():
+    """Create schema once per session, drop all tables after.
 
+    Deliberately synchronous so it runs in an isolated asyncio.run() call,
+    decoupled from the per-test event loops used by async fixtures.
+    """
+    async def _create():
+        engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        await engine.dispose()
 
-@pytest_asyncio.fixture(scope="session", autouse=True)
-async def create_tables():
-    """Create schema once per session, drop all tables after."""
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async def _drop():
+        engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+        await engine.dispose()
+
+    asyncio.run(_create())
     yield
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    await test_engine.dispose()
+    asyncio.run(_drop())
 
 
 @pytest_asyncio.fixture
 async def db() -> AsyncGenerator[AsyncSession, None]:
-    """Per-test DB session that always rolls back."""
+    """Per-test DB session that always rolls back.
+
+    With NullPool the underlying asyncpg connection is opened on the current
+    (function-scoped) event loop and closed on session exit — no loop leakage.
+    The explicit rollback undoes any test data without DDL overhead per test.
+    """
     async with TestSessionLocal() as session:
-        async with session.begin():
+        try:
             yield session
+        finally:
             await session.rollback()
 
 
