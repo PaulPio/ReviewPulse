@@ -1,0 +1,44 @@
+{
+  "items": [
+    {
+      "asin": "DEMOASIN01",
+      "reviews": [
+        {
+          "external_key": "r1",
+          "body": "Loved the characters and the pacing. Could not put it down.",
+          "rating": 5,
+          "review_date": "2024-01-15T00:00:00+00:00"
+        },
+        {
+          "external_key": "r2",
+          "body": "The pacing dragged in the middle but the ending landed well.",
+          "rating": 3,
+          "review_date": "2024-02-10T00:00:00+00:00"
+        },
+        {
+          "external_key": "r3",
+          "body": "Terrible waste of time. Boring and confusing narration.",
+          "rating": 1,
+          "review_date": "2024-03-01T00:00:00+00:00"
+        }
+      ]
+    },
+    {
+      "asin": "DEMOASIN02",
+      "reviews": [
+        {
+          "external_key": "r1",
+          "body": "Beautiful prose. The cover art is stunning too.",
+          "rating": 5,
+          "review_date": "2024-01-20T00:00:00+00:00"
+        },
+        {
+          "external_key": "r2",
+          "body": "Mixed feelings — great premise but characters felt thin.",
+          "rating": 3,
+          "review_date": "2024-04-01T00:00:00+00:00"
+        }
+      ]
+    }
+  ]
+}
