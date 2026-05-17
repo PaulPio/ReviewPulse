@@ -73,7 +73,7 @@ async def test_trigger_ingestion(client: AsyncClient, book: Book):
     mock_task.id = "celery-test-task-id"
 
     with patch(
-        "app.api.jobs.run_ingestion_job.delay",
+        "app.api.books.run_ingestion_job.delay",
         return_value=mock_task,
     ):
         resp = await client.post(f"/api/v1/books/{book.id}/ingest")

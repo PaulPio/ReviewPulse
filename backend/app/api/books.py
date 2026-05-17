@@ -24,9 +24,12 @@ from app.api.deps import get_current_author
 from app.db.base import get_db
 from app.models.author import Author
 from app.models.book import Book
+from app.models.ingestion_job import IngestionJob
 from app.models.llm_usage import LLMUsage
 from app.models.review import Review
 from app.schemas.book import BookCreate, BookOut, BookWithStats
+from app.schemas.job import JobOut
+from app.tasks.ingestion import run_ingestion_job
 
 router = APIRouter()
 
@@ -120,6 +123,53 @@ async def get_book(
 
     stats = await _get_book_stats(db, book.id)
     return BookWithStats(**BookOut.model_validate(book).model_dump(), **stats)
+
+
+@router.post("/{book_id}/ingest", response_model=JobOut, status_code=status.HTTP_202_ACCEPTED)
+async def trigger_ingestion(
+    book_id: uuid.UUID,
+    current_author: Author = Depends(get_current_author),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Trigger an async ingestion job for a book.
+
+    Returns 202 Accepted immediately — the HTTP connection is not held open.
+    Clients poll GET /api/v1/jobs/{id} until status is completed | failed | partial.
+    This follows the fire-and-forget pattern described in RFC 9110 §15.3.3.
+    """
+    result = await db.execute(
+        select(Book).where(Book.id == book_id, Book.author_id == current_author.id)
+    )
+    book = result.scalar_one_or_none()
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    # 409 if a job is already active for this book
+    active_result = await db.execute(
+        select(IngestionJob).where(
+            IngestionJob.book_id == book_id,
+            IngestionJob.author_id == current_author.id,
+            IngestionJob.status.in_(["queued", "running"]),
+        )
+    )
+    if active_result.scalar_one_or_none():
+        raise HTTPException(status_code=409, detail="An ingestion job is already active for this book")
+
+    job = IngestionJob(
+        book_id=book_id,
+        author_id=current_author.id,
+        status="queued",
+    )
+    db.add(job)
+    await db.flush()
+    await db.refresh(job)
+
+    task = run_ingestion_job.delay(str(job.id))
+    job.celery_task_id = task.id
+    await db.flush()
+
+    return JobOut.model_validate(job)
 
 
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
