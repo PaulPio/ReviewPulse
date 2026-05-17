@@ -1,0 +1,989 @@
+─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ child_scope = {                                                                              │ │
+│ │               │   'endpoint': <function register at 0x000002141C0E0CC0>,                     │ │
+│ │               │   'path_params': {},                                                         │ │
+│ │               │   'route': APIRoute(path='/api/v1/auth/register', name='register',           │ │
+│ │               methods=['POST'])                                                              │ │
+│ │               }                                                                              │ │
+│ │       match = <Match.FULL: 2>                                                                │ │
+│ │     partial = None                                                                           │ │
+│ │     receive = <bound method RequestResponseCycle.receive of                                  │ │
+│ │               <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at          │ │
+│ │               0x000002141E5A3650>>                                                           │ │
+│ │       route = APIRoute(path='/api/v1/auth/register', name='register', methods=['POST'])      │ │
+│ │       scope = {                                                                              │ │
+│ │               │   'type': 'http',                                                            │ │
+│ │               │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                         │ │
+│ │               │   'http_version': '1.1',                                                     │ │
+│ │               │   'server': ('127.0.0.1', 8000),                                             │ │
+│ │               │   'client': ('127.0.0.1', 64362),                                            │ │
+│ │               │   'scheme': 'http',                                                          │ │
+│ │               │   'root_path': '',                                                           │ │
+│ │               │   'headers': [                                                               │ │
+│ │               │   │   (b'host', b'localhost:8000'),                                          │ │
+│ │               │   │   (b'connection', b'close'),                                             │ │
+│ │               │   │   (b'content-length', b'78'),                                            │ │
+│ │               │   │   (b'sec-ch-ua-platform', b'"Windows"'),                                 │ │
+│ │               │   │   (                                                                      │ │
+│ │               │   │   │   b'user-agent',                                                     │ │
+│ │               │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36     │ │
+│ │               (KHTML, like Gecko)'+31                                                        │ │
+│ │               │   │   ),                                                                     │ │
+│ │               │   │   (                                                                      │ │
+│ │               │   │   │   b'sec-ch-ua',                                                      │ │
+│ │               │   │   │   b'"Chromium";v="148", "Google Chrome";v="148",                     │ │
+│ │               "Not/A)Brand";v="99"'                                                          │ │
+│ │               │   │   ),                                                                     │ │
+│ │               │   │   (b'dnt', b'1'),                                                        │ │
+│ │               │   │   (b'content-type', b'application/json'),                                │ │
+│ │               │   │   (b'sec-ch-ua-mobile', b'?0'),                                          │ │
+│ │               │   │   (b'accept', b'*/*'),                                                   │ │
+│ │               │   │   ... +8                                                                 │ │
+│ │               │   ],                                                                         │ │
+│ │               │   'state': {},                                                               │ │
+│ │               │   'method': 'POST',                                                          │ │
+│ │               │   ... +9                                                                     │ │
+│ │               }                                                                              │ │
+│ │        self = <fastapi.routing.APIRouter object at 0x000002141DE07290>                       │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py:288 in handle          │
+│                                                                                                  │
+│   285 │   │   │   │   response = PlainTextResponse("Method Not Allowed", status_code=405, head   │
+│   286 │   │   │   await response(scope, receive, send)                                           │
+│   287 │   │   else:                                                                              │
+│ ❱ 288 │   │   │   await self.app(scope, receive, send)                                           │
+│   289 │                                                                                          │
+│   290 │   def __eq__(self, other: typing.Any) -> bool:                                           │
+│   291 │   │   return (                                                                           │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ receive = <bound method RequestResponseCycle.receive of                                      │ │
+│ │           <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at              │ │
+│ │           0x000002141E5A3650>>                                                               │ │
+│ │   scope = {                                                                                  │ │
+│ │           │   'type': 'http',                                                                │ │
+│ │           │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                             │ │
+│ │           │   'http_version': '1.1',                                                         │ │
+│ │           │   'server': ('127.0.0.1', 8000),                                                 │ │
+│ │           │   'client': ('127.0.0.1', 64362),                                                │ │
+│ │           │   'scheme': 'http',                                                              │ │
+│ │           │   'root_path': '',                                                               │ │
+│ │           │   'headers': [                                                                   │ │
+│ │           │   │   (b'host', b'localhost:8000'),                                              │ │
+│ │           │   │   (b'connection', b'close'),                                                 │ │
+│ │           │   │   (b'content-length', b'78'),                                                │ │
+│ │           │   │   (b'sec-ch-ua-platform', b'"Windows"'),                                     │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'user-agent',                                                         │ │
+│ │           │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, │ │
+│ │           like Gecko)'+31                                                                    │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'sec-ch-ua',                                                          │ │
+│ │           │   │   │   b'"Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"'   │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (b'dnt', b'1'),                                                            │ │
+│ │           │   │   (b'content-type', b'application/json'),                                    │ │
+│ │           │   │   (b'sec-ch-ua-mobile', b'?0'),                                              │ │
+│ │           │   │   (b'accept', b'*/*'),                                                       │ │
+│ │           │   │   ... +8                                                                     │ │
+│ │           │   ],                                                                             │ │
+│ │           │   'state': {},                                                                   │ │
+│ │           │   'method': 'POST',                                                              │ │
+│ │           │   ... +9                                                                         │ │
+│ │           }                                                                                  │ │
+│ │    self = APIRoute(path='/api/v1/auth/register', name='register', methods=['POST'])          │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py:76 in app              │
+│                                                                                                  │
+│    73 │   │   │   response = await f(request)                                                    │
+│    74 │   │   │   await response(scope, receive, send)                                           │
+│    75 │   │                                                                                      │
+│ ❱  76 │   │   await wrap_app_handling_exceptions(app, request)(scope, receive, send)             │
+│    77 │                                                                                          │
+│    78 │   return app                                                                             │
+│    79                                                                                            │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ receive = <bound method RequestResponseCycle.receive of                                      │ │
+│ │           <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at              │ │
+│ │           0x000002141E5A3650>>                                                               │ │
+│ │ request = <starlette.requests.Request object at 0x000002141E5A36B0>                          │ │
+│ │   scope = {                                                                                  │ │
+│ │           │   'type': 'http',                                                                │ │
+│ │           │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                             │ │
+│ │           │   'http_version': '1.1',                                                         │ │
+│ │           │   'server': ('127.0.0.1', 8000),                                                 │ │
+│ │           │   'client': ('127.0.0.1', 64362),                                                │ │
+│ │           │   'scheme': 'http',                                                              │ │
+│ │           │   'root_path': '',                                                               │ │
+│ │           │   'headers': [                                                                   │ │
+│ │           │   │   (b'host', b'localhost:8000'),                                              │ │
+│ │           │   │   (b'connection', b'close'),                                                 │ │
+│ │           │   │   (b'content-length', b'78'),                                                │ │
+│ │           │   │   (b'sec-ch-ua-platform', b'"Windows"'),                                     │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'user-agent',                                                         │ │
+│ │           │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, │ │
+│ │           like Gecko)'+31                                                                    │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'sec-ch-ua',                                                          │ │
+│ │           │   │   │   b'"Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"'   │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (b'dnt', b'1'),                                                            │ │
+│ │           │   │   (b'content-type', b'application/json'),                                    │ │
+│ │           │   │   (b'sec-ch-ua-mobile', b'?0'),                                              │ │
+│ │           │   │   (b'accept', b'*/*'),                                                       │ │
+│ │           │   │   ... +8                                                                     │ │
+│ │           │   ],                                                                             │ │
+│ │           │   'state': {},                                                                   │ │
+│ │           │   'method': 'POST',                                                              │ │
+│ │           │   ... +9                                                                         │ │
+│ │           }                                                                                  │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py:62 in       │
+│ wrapped_app                                                                                      │
+│                                                                                                  │
+│   59 │   │   │   │   handler = _lookup_exception_handler(exception_handlers, exc)                │
+│   60 │   │   │                                                                                   │
+│   61 │   │   │   if handler is None:                                                             │
+│ ❱ 62 │   │   │   │   raise exc                                                                   │
+│   63 │   │   │                                                                                   │
+│   64 │   │   │   if response_started:                                                            │
+│   65 │   │   │   │   msg = "Caught handled exception, but response already started."             │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │               conn = <starlette.requests.Request object at 0x000002141E5A36B0>               │ │
+│ │ exception_handlers = {                                                                       │ │
+│ │                      │   <class 'starlette.exceptions.HTTPException'>: <function             │ │
+│ │                      http_exception_handler at 0x000002141AC8A3E0>,                          │ │
+│ │                      │   <class 'starlette.exceptions.WebSocketException'>: <bound method    │ │
+│ │                      ExceptionMiddleware.websocket_exception of                              │ │
+│ │                      <starlette.middleware.exceptions.ExceptionMiddleware object at          │ │
+│ │                      0x0000021418DC5760>>,                                                   │ │
+│ │                      │   <class 'fastapi.exceptions.RequestValidationError'>: <function      │ │
+│ │                      request_validation_exception_handler at 0x000002141ACAE020>,            │ │
+│ │                      │   <class 'fastapi.exceptions.WebSocketRequestValidationError'>:       │ │
+│ │                      <function websocket_request_validation_exception_handler at             │ │
+│ │                      0x000002141ACAF060>                                                     │ │
+│ │                      }                                                                       │ │
+│ │            handler = None                                                                    │ │
+│ │            receive = <bound method RequestResponseCycle.receive of                           │ │
+│ │                      <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at   │ │
+│ │                      0x000002141E5A3650>>                                                    │ │
+│ │   response_started = False                                                                   │ │
+│ │              scope = {                                                                       │ │
+│ │                      │   'type': 'http',                                                     │ │
+│ │                      │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                  │ │
+│ │                      │   'http_version': '1.1',                                              │ │
+│ │                      │   'server': ('127.0.0.1', 8000),                                      │ │
+│ │                      │   'client': ('127.0.0.1', 64362),                                     │ │
+│ │                      │   'scheme': 'http',                                                   │ │
+│ │                      │   'root_path': '',                                                    │ │
+│ │                      │   'headers': [                                                        │ │
+│ │                      │   │   (b'host', b'localhost:8000'),                                   │ │
+│ │                      │   │   (b'connection', b'close'),                                      │ │
+│ │                      │   │   (b'content-length', b'78'),                                     │ │
+│ │                      │   │   (b'sec-ch-ua-platform', b'"Windows"'),                          │ │
+│ │                      │   │   (                                                               │ │
+│ │                      │   │   │   b'user-agent',                                              │ │
+│ │                      │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64)                 │ │
+│ │                      AppleWebKit/537.36 (KHTML, like Gecko)'+31                              │ │
+│ │                      │   │   ),                                                              │ │
+│ │                      │   │   (                                                               │ │
+│ │                      │   │   │   b'sec-ch-ua',                                               │ │
+│ │                      │   │   │   b'"Chromium";v="148", "Google Chrome";v="148",              │ │
+│ │                      "Not/A)Brand";v="99"'                                                   │ │
+│ │                      │   │   ),                                                              │ │
+│ │                      │   │   (b'dnt', b'1'),                                                 │ │
+│ │                      │   │   (b'content-type', b'application/json'),                         │ │
+│ │                      │   │   (b'sec-ch-ua-mobile', b'?0'),                                   │ │
+│ │                      │   │   (b'accept', b'*/*'),                                            │ │
+│ │                      │   │   ... +8                                                          │ │
+│ │                      │   ],                                                                  │ │
+│ │                      │   'state': {},                                                        │ │
+│ │                      │   'method': 'POST',                                                   │ │
+│ │                      │   ... +9                                                              │ │
+│ │                      }                                                                       │ │
+│ │    status_handlers = {}                                                                      │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py:51 in       │
+│ wrapped_app                                                                                      │
+│                                                                                                  │
+│   48 │   │   │   await send(message)                                                             │
+│   49 │   │                                                                                       │
+│   50 │   │   try:                                                                                │
+│ ❱ 51 │   │   │   await app(scope, receive, sender)                                               │
+│   52 │   │   except Exception as exc:                                                            │
+│   53 │   │   │   handler = None                                                                  │
+│   54                                                                                             │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │               conn = <starlette.requests.Request object at 0x000002141E5A36B0>               │ │
+│ │ exception_handlers = {                                                                       │ │
+│ │                      │   <class 'starlette.exceptions.HTTPException'>: <function             │ │
+│ │                      http_exception_handler at 0x000002141AC8A3E0>,                          │ │
+│ │                      │   <class 'starlette.exceptions.WebSocketException'>: <bound method    │ │
+│ │                      ExceptionMiddleware.websocket_exception of                              │ │
+│ │                      <starlette.middleware.exceptions.ExceptionMiddleware object at          │ │
+│ │                      0x0000021418DC5760>>,                                                   │ │
+│ │                      │   <class 'fastapi.exceptions.RequestValidationError'>: <function      │ │
+│ │                      request_validation_exception_handler at 0x000002141ACAE020>,            │ │
+│ │                      │   <class 'fastapi.exceptions.WebSocketRequestValidationError'>:       │ │
+│ │                      <function websocket_request_validation_exception_handler at             │ │
+│ │                      0x000002141ACAF060>                                                     │ │
+│ │                      }                                                                       │ │
+│ │            handler = None                                                                    │ │
+│ │            receive = <bound method RequestResponseCycle.receive of                           │ │
+│ │                      <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at   │ │
+│ │                      0x000002141E5A3650>>                                                    │ │
+│ │   response_started = False                                                                   │ │
+│ │              scope = {                                                                       │ │
+│ │                      │   'type': 'http',                                                     │ │
+│ │                      │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                  │ │
+│ │                      │   'http_version': '1.1',                                              │ │
+│ │                      │   'server': ('127.0.0.1', 8000),                                      │ │
+│ │                      │   'client': ('127.0.0.1', 64362),                                     │ │
+│ │                      │   'scheme': 'http',                                                   │ │
+│ │                      │   'root_path': '',                                                    │ │
+│ │                      │   'headers': [                                                        │ │
+│ │                      │   │   (b'host', b'localhost:8000'),                                   │ │
+│ │                      │   │   (b'connection', b'close'),                                      │ │
+│ │                      │   │   (b'content-length', b'78'),                                     │ │
+│ │                      │   │   (b'sec-ch-ua-platform', b'"Windows"'),                          │ │
+│ │                      │   │   (                                                               │ │
+│ │                      │   │   │   b'user-agent',                                              │ │
+│ │                      │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64)                 │ │
+│ │                      AppleWebKit/537.36 (KHTML, like Gecko)'+31                              │ │
+│ │                      │   │   ),                                                              │ │
+│ │                      │   │   (                                                               │ │
+│ │                      │   │   │   b'sec-ch-ua',                                               │ │
+│ │                      │   │   │   b'"Chromium";v="148", "Google Chrome";v="148",              │ │
+│ │                      "Not/A)Brand";v="99"'                                                   │ │
+│ │                      │   │   ),                                                              │ │
+│ │                      │   │   (b'dnt', b'1'),                                                 │ │
+│ │                      │   │   (b'content-type', b'application/json'),                         │ │
+│ │                      │   │   (b'sec-ch-ua-mobile', b'?0'),                                   │ │
+│ │                      │   │   (b'accept', b'*/*'),                                            │ │
+│ │                      │   │   ... +8                                                          │ │
+│ │                      │   ],                                                                  │ │
+│ │                      │   'state': {},                                                        │ │
+│ │                      │   'method': 'POST',                                                   │ │
+│ │                      │   ... +9                                                              │ │
+│ │                      }                                                                       │ │
+│ │    status_handlers = {}                                                                      │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py:73 in app              │
+│                                                                                                  │
+│    70 │   │   request = Request(scope, receive, send)                                            │
+│    71 │   │                                                                                      │
+│    72 │   │   async def app(scope: Scope, receive: Receive, send: Send) -> None:                 │
+│ ❱  73 │   │   │   response = await f(request)                                                    │
+│    74 │   │   │   await response(scope, receive, send)                                           │
+│    75 │   │                                                                                      │
+│    76 │   │   await wrap_app_handling_exceptions(app, request)(scope, receive, send)             │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ receive = <bound method RequestResponseCycle.receive of                                      │ │
+│ │           <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at              │ │
+│ │           0x000002141E5A3650>>                                                               │ │
+│ │ request = <starlette.requests.Request object at 0x000002141E5A36B0>                          │ │
+│ │   scope = {                                                                                  │ │
+│ │           │   'type': 'http',                                                                │ │
+│ │           │   'asgi': {'version': '3.0', 'spec_version': '2.4'},                             │ │
+│ │           │   'http_version': '1.1',                                                         │ │
+│ │           │   'server': ('127.0.0.1', 8000),                                                 │ │
+│ │           │   'client': ('127.0.0.1', 64362),                                                │ │
+│ │           │   'scheme': 'http',                                                              │ │
+│ │           │   'root_path': '',                                                               │ │
+│ │           │   'headers': [                                                                   │ │
+│ │           │   │   (b'host', b'localhost:8000'),                                              │ │
+│ │           │   │   (b'connection', b'close'),                                                 │ │
+│ │           │   │   (b'content-length', b'78'),                                                │ │
+│ │           │   │   (b'sec-ch-ua-platform', b'"Windows"'),                                     │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'user-agent',                                                         │ │
+│ │           │   │   │   b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, │ │
+│ │           like Gecko)'+31                                                                    │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (                                                                          │ │
+│ │           │   │   │   b'sec-ch-ua',                                                          │ │
+│ │           │   │   │   b'"Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"'   │ │
+│ │           │   │   ),                                                                         │ │
+│ │           │   │   (b'dnt', b'1'),                                                            │ │
+│ │           │   │   (b'content-type', b'application/json'),                                    │ │
+│ │           │   │   (b'sec-ch-ua-mobile', b'?0'),                                              │ │
+│ │           │   │   (b'accept', b'*/*'),                                                       │ │
+│ │           │   │   ... +8                                                                     │ │
+│ │           │   ],                                                                             │ │
+│ │           │   'state': {},                                                                   │ │
+│ │           │   'method': 'POST',                                                              │ │
+│ │           │   ... +9                                                                         │ │
+│ │           }                                                                                  │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\fastapi\routing.py:301 in app               │
+│                                                                                                  │
+│    298 │   │   │   │   )                                                                         │
+│    299 │   │   │   │   errors = solved_result.errors                                             │
+│    300 │   │   │   │   if not errors:                                                            │
+│ ❱  301 │   │   │   │   │   raw_response = await run_endpoint_function(                           │
+│    302 │   │   │   │   │   │   dependant=dependant,                                              │
+│    303 │   │   │   │   │   │   values=solved_result.values,                                      │
+│    304 │   │   │   │   │   │   is_coroutine=is_coroutine,                                        │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │                async_exit_stack = <contextlib.AsyncExitStack object at 0x000002141E5A2FC0>   │ │
+│ │                            body = {                                                          │ │
+│ │                                   │   'email': 'ppiot001@fiu.edu',                           │ │
+│ │                                   │   'password': 'Miranda2026.',                            │ │
+│ │                                   │   'display_name': 'Paul P'                               │ │
+│ │                                   }                                                          │ │
+│ │                      body_bytes = b'{"email":"ppiot001@fiu.edu","password":"Miranda2026.","… │ │
+│ │                                   P"}'                                                       │ │
+│ │                      body_field = ModelField(                                                │ │
+│ │                                   │   field_info=Body(                                       │ │
+│ │                                   │   │   annotation=AuthorRegister,                         │ │
+│ │                                   │   │   required=True,                                     │ │
+│ │                                   │   │   alias='data',                                      │ │
+│ │                                   │   │   json_schema_extra={}                               │ │
+│ │                                   │   ),                                                     │ │
+│ │                                   │   name='data',                                           │ │
+│ │                                   │   mode='validation'                                      │ │
+│ │                                   )                                                          │ │
+│ │              content_type_value = 'application/json'                                         │ │
+│ │                       dependant = Dependant(                                                 │ │
+│ │                                   │   path_params=[],                                        │ │
+│ │                                   │   query_params=[],                                       │ │
+│ │                                   │   header_params=[],                                      │ │
+│ │                                   │   cookie_params=[],                                      │ │
+│ │                                   │   body_params=[                                          │ │
+│ │                                   │   │   ModelField(                                        │ │
+│ │                                   │   │   │   field_info=Body(                               │ │
+│ │                                   │   │   │   │   annotation=AuthorRegister,                 │ │
+│ │                                   │   │   │   │   required=True,                             │ │
+│ │                                   │   │   │   │   alias='data',                              │ │
+│ │                                   │   │   │   │   json_schema_extra={}                       │ │
+│ │                                   │   │   │   ),                                             │ │
+│ │                                   │   │   │   name='data',                                   │ │
+│ │                                   │   │   │   mode='validation'                              │ │
+│ │                                   │   │   )                                                  │ │
+│ │                                   │   ],                                                     │ │
+│ │                                   │   dependencies=[                                         │ │
+│ │                                   │   │   Dependant(                                         │ │
+│ │                                   │   │   │   path_params=[],                                │ │
+│ │                                   │   │   │   query_params=[],                               │ │
+│ │                                   │   │   │   header_params=[],                              │ │
+│ │                                   │   │   │   cookie_params=[],                              │ │
+│ │                                   │   │   │   body_params=[],                                │ │
+│ │                                   │   │   │   dependencies=[],                               │ │
+│ │                                   │   │   │   security_requirements=[],                      │ │
+│ │                                   │   │   │   name='db',                                     │ │
+│ │                                   │   │   │   call=<function get_db at 0x000002141C0699E0>,  │ │
+│ │                                   │   │   │   request_param_name=None,                       │ │
+│ │                                   │   │   │   websocket_param_name=None,                     │ │
+│ │                                   │   │   │   http_connection_param_name=None,               │ │
+│ │                                   │   │   │   response_param_name=None,                      │ │
+│ │                                   │   │   │   background_tasks_param_name=None,              │ │
+│ │                                   │   │   │   security_scopes_param_name=None,               │ │
+│ │                                   │   │   │   security_scopes=[],                            │ │
+│ │                                   │   │   │   use_cache=True,                                │ │
+│ │                                   │   │   │   path='/api/v1/auth/register',                  │ │
+│ │                                   │   │   │   cache_key=(                                    │ │
+│ │                                   │   │   │   │   <function get_db at 0x000002141C0699E0>,   │ │
+│ │                                   │   │   │   │   ()                                         │ │
+│ │                                   │   │   │   )                                              │ │
+│ │                                   │   │   )                                                  │ │
+│ │                                   │   ],                                                     │ │
+│ │                                   │   security_requirements=[],                              │ │
+│ │                                   │   name=None,                                             │ │
+│ │                                   │   call=<function register at 0x000002141C0E0CC0>,        │ │
+│ │                                   │   request_param_name=None,                               │ │
+│ │                                   │   websocket_param_name=None,                             │ │
+│ │                                   │   http_connection_param_name=None,                       │ │
+│ │                                   │   response_param_name=None,                              │ │
+│ │                                   │   background_tasks_param_name=None,                      │ │
+│ │                                   │   security_scopes_param_name=None,                       │ │
+│ │                                   │   security_scopes=None,                                  │ │
+│ │                                   │   use_cache=True,                                        │ │
+│ │                                   │   path='/api/v1/auth/register',                          │ │
+│ │                                   │   cache_key=(                                            │ │
+│ │                                   │   │   <function register at 0x000002141C0E0CC0>,         │ │
+│ │                                   │   │   ()                                                 │ │
+│ │                                   │   )                                                      │ │
+│ │                                   )                                                          │ │
+│ │   dependency_overrides_provider = <fastapi.applications.FastAPI object at                    │ │
+│ │                                   0x000002141DE07200>                                        │ │
+│ │               embed_body_fields = False                                                      │ │
+│ │                          errors = []                                                         │ │
+│ │                      file_stack = <contextlib.AsyncExitStack object at 0x000002141E5A3E30>   │ │
+│ │                    is_body_form = False                                                      │ │
+│ │                    is_coroutine = True                                                       │ │
+│ │                       json_body = {                                                          │ │
+│ │                                   │   'email': 'ppiot001@fiu.edu',                           │ │
+│ │                                   │   'password': 'Miranda2026.',                            │ │
+│ │                                   │   'display_name': 'Paul P'                               │ │
+│ │                                   }                                                          │ │
+│ │                         message = <email.message.Message object at 0x000002141E5A3D10>       │ │
+│ │                         request = <starlette.requests.Request object at 0x000002141E5A36B0>  │ │
+│ │                        response = None                                                       │ │
+│ │                  response_field = ModelField(                                                │ │
+│ │                                   │   field_info=FieldInfo(                                  │ │
+│ │                                   │   │   annotation=TokenOut,                               │ │
+│ │                                   │   │   required=True                                      │ │
+│ │                                   │   ),                                                     │ │
+│ │                                   │   name='Response_register_api_v1_auth_register_post',    │ │
+│ │                                   │   mode='serialization'                                   │ │
+│ │                                   )                                                          │ │
+│ │         response_model_by_alias = True                                                       │ │
+│ │          response_model_exclude = None                                                       │ │
+│ │ response_model_exclude_defaults = False                                                      │ │
+│ │     response_model_exclude_none = False                                                      │ │
+│ │    response_model_exclude_unset = False                                                      │ │
+│ │          response_model_include = None                                                       │ │
+│ │                   solved_result = SolvedDependency(                                          │ │
+│ │                                   │   values={                                               │ │
+│ │                                   │   │   'db': <sqlalchemy.ext.asyncio.session.AsyncSession │ │
+│ │                                   object at 0x000002141E5A24B0>,                             │ │
+│ │                                   │   │   'data': AuthorRegister(                            │ │
+│ │                                   │   │   │   email='ppiot001@fiu.edu',                      │ │
+│ │                                   │   │   │   password='Miranda2026.',                       │ │
+│ │                                   │   │   │   display_name='Paul P'                          │ │
+│ │                                   │   │   )                                                  │ │
+│ │                                   │   },                                                     │ │
+│ │                                   │   errors=[],                                             │ │
+│ │                                   │   background_tasks=None,                                 │ │
+│ │                                   │   response=<starlette.responses.Response object at       │ │
+│ │                                   0x000002141E5A2F90>,                                       │ │
+│ │                                   │   dependency_cache={                                     │ │
+│ │                                   │   │   (<function get_db at 0x000002141C0699E0>, ()):     │ │
+│ │                                   <sqlalchemy.ext.asyncio.session.AsyncSession object at     │ │
+│ │                                   0x000002141E5A24B0>                                        │ │
+│ │                                   │   }                                                      │ │
+│ │                                   )                                                          │ │
+│ │                     status_code = 201                                                        │ │
+│ │                         subtype = 'json'                                                     │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\fastapi\routing.py:212 in                   │
+│ run_endpoint_function                                                                            │
+│                                                                                                  │
+│    209 │   assert dependant.call is not None, "dependant.call must be a function"                │
+│    210 │                                                                                         │
+│    211 │   if is_coroutine:                                                                      │
+│ ❱  212 │   │   return await dependant.call(**values)                                             │
+│    213 │   else:                                                                                 │
+│    214 │   │   return await run_in_threadpool(dependant.call, **values)                          │
+│    215                                                                                           │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │    dependant = Dependant(                                                                    │ │
+│ │                │   path_params=[],                                                           │ │
+│ │                │   query_params=[],                                                          │ │
+│ │                │   header_params=[],                                                         │ │
+│ │                │   cookie_params=[],                                                         │ │
+│ │                │   body_params=[                                                             │ │
+│ │                │   │   ModelField(                                                           │ │
+│ │                │   │   │   field_info=Body(                                                  │ │
+│ │                │   │   │   │   annotation=AuthorRegister,                                    │ │
+│ │                │   │   │   │   required=True,                                                │ │
+│ │                │   │   │   │   alias='data',                                                 │ │
+│ │                │   │   │   │   json_schema_extra={}                                          │ │
+│ │                │   │   │   ),                                                                │ │
+│ │                │   │   │   name='data',                                                      │ │
+│ │                │   │   │   mode='validation'                                                 │ │
+│ │                │   │   )                                                                     │ │
+│ │                │   ],                                                                        │ │
+│ │                │   dependencies=[                                                            │ │
+│ │                │   │   Dependant(                                                            │ │
+│ │                │   │   │   path_params=[],                                                   │ │
+│ │                │   │   │   query_params=[],                                                  │ │
+│ │                │   │   │   header_params=[],                                                 │ │
+│ │                │   │   │   cookie_params=[],                                                 │ │
+│ │                │   │   │   body_params=[],                                                   │ │
+│ │                │   │   │   dependencies=[],                                                  │ │
+│ │                │   │   │   security_requirements=[],                                         │ │
+│ │                │   │   │   name='db',                                                        │ │
+│ │                │   │   │   call=<function get_db at 0x000002141C0699E0>,                     │ │
+│ │                │   │   │   request_param_name=None,                                          │ │
+│ │                │   │   │   websocket_param_name=None,                                        │ │
+│ │                │   │   │   http_connection_param_name=None,                                  │ │
+│ │                │   │   │   response_param_name=None,                                         │ │
+│ │                │   │   │   background_tasks_param_name=None,                                 │ │
+│ │                │   │   │   security_scopes_param_name=None,                                  │ │
+│ │                │   │   │   security_scopes=[],                                               │ │
+│ │                │   │   │   use_cache=True,                                                   │ │
+│ │                │   │   │   path='/api/v1/auth/register',                                     │ │
+│ │                │   │   │   cache_key=(<function get_db at 0x000002141C0699E0>, ())           │ │
+│ │                │   │   )                                                                     │ │
+│ │                │   ],                                                                        │ │
+│ │                │   security_requirements=[],                                                 │ │
+│ │                │   name=None,                                                                │ │
+│ │                │   call=<function register at 0x000002141C0E0CC0>,                           │ │
+│ │                │   request_param_name=None,                                                  │ │
+│ │                │   websocket_param_name=None,                                                │ │
+│ │                │   http_connection_param_name=None,                                          │ │
+│ │                │   response_param_name=None,                                                 │ │
+│ │                │   background_tasks_param_name=None,                                         │ │
+│ │                │   security_scopes_param_name=None,                                          │ │
+│ │                │   security_scopes=None,                                                     │ │
+│ │                │   use_cache=True,                                                           │ │
+│ │                │   path='/api/v1/auth/register',                                             │ │
+│ │                │   cache_key=(<function register at 0x000002141C0E0CC0>, ())                 │ │
+│ │                )                                                                             │ │
+│ │ is_coroutine = True                                                                          │ │
+│ │       values = {                                                                             │ │
+│ │                │   'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at              │ │
+│ │                0x000002141E5A24B0>,                                                          │ │
+│ │                │   'data': AuthorRegister(                                                   │ │
+│ │                │   │   email='ppiot001@fiu.edu',                                             │ │
+│ │                │   │   password='Miranda2026.',                                              │ │
+│ │                │   │   display_name='Paul P'                                                 │ │
+│ │                │   )                                                                         │ │
+│ │                }                                                                             │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\app\api\authors.py:31 in         │
+│ register                                                                                         │
+│                                                                                                  │
+│   28 │   │   id=uuid.uuid4(),                                                                    │
+│   29 │   │   email=data.email,                                                                   │
+│   30 │   │   display_name=data.display_name,                                                     │
+│ ❱ 31 │   │   hashed_password=hash_password(data.password),                                       │
+│   32 │   │   last_login_at=datetime.now(timezone.utc),                                           │
+│   33 │   )                                                                                       │
+│   34 │   db.add(author)                                                                          │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │     data = AuthorRegister(                                                                   │ │
+│ │            │   email='ppiot001@fiu.edu',                                                     │ │
+│ │            │   password='Miranda2026.',                                                      │ │
+│ │            │   display_name='Paul P'                                                         │ │
+│ │            )                                                                                 │ │
+│ │       db = <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x000002141E5A24B0>        │ │
+│ │ existing = <sqlalchemy.engine.result.ChunkedIteratorResult object at 0x000002141E5E9A10>     │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\app\core\security.py:47 in       │
+│ hash_password                                                                                    │
+│                                                                                                  │
+│    44                                                                                            │
+│    45                                                                                            │
+│    46 def hash_password(plain: str) -> str:                                                      │
+│ ❱  47 │   return _pwd_context.hash(plain)                                                        │
+│    48                                                                                            │
+│    49                                                                                            │
+│    50 def verify_password(plain: str, hashed: str) -> bool:                                      │
+│                                                                                                  │
+│ ╭──────── locals ────────╮                                                                       │
+│ │ plain = 'Miranda2026.' │                                                                       │
+│ ╰────────────────────────╯                                                                       │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\context.py:2258 in hash             │
+│                                                                                                  │
+│   2255 │   │   strip_unused = self._strip_unused_context_kwds                                    │
+│   2256 │   │   if strip_unused:                                                                  │
+│   2257 │   │   │   strip_unused(kwds, record)                                                    │
+│ ❱ 2258 │   │   return record.hash(secret, **kwds)                                                │
+│   2259 │                                                                                         │
+│   2260 │   @deprecated_method(deprecated="1.7", removed="2.0", replacement="CryptContext.hash()  │
+│   2261 │   def encrypt(self, *args, **kwds):                                                     │
+│                                                                                                  │
+│ ╭──────────────────── locals ────────────────────╮                                               │
+│ │     category = None                            │                                               │
+│ │         kwds = {}                              │                                               │
+│ │       scheme = None                            │                                               │
+│ │       secret = 'Miranda2026.'                  │                                               │
+│ │         self = <CryptContext at 0x2141b79fef0> │                                               │
+│ │ strip_unused = None                            │                                               │
+│ ╰────────────────────────────────────────────────╯                                               │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:779 in hash       │
+│                                                                                                  │
+│    776 │   │   # NOTE: at this point, 'kwds' should just contain context_kwds subset             │
+│    777 │   │   validate_secret(secret)                                                           │
+│    778 │   │   self = cls(use_defaults=True, **kwds)                                             │
+│ ❱  779 │   │   self.checksum = self._calc_checksum(secret)                                       │
+│    780 │   │   return self.to_string()                                                           │
+│    781 │                                                                                         │
+│    782 │   @classmethod                                                                          │
+│                                                                                                  │
+│ ╭────────────────────────────────────────── locals ──────────────────────────────────────────╮   │
+│ │   kwds = {}                                                                                │   │
+│ │ secret = 'Miranda2026.'                                                                    │   │
+│ │   self = <passlib.handlers.bcrypt.<customized bcrypt hasher> object at 0x000002141E4611C0> │   │
+│ ╰────────────────────────────────────────────────────────────────────────────────────────────╯   │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py:591 in           │
+│ _calc_checksum                                                                                   │
+│                                                                                                  │
+│    588 │   # digest calculation                                                                  │
+│    589 │   #===================================================================                  │
+│    590 │   def _calc_checksum(self, secret):                                                     │
+│ ❱  591 │   │   self._stub_requires_backend()                                                     │
+│    592 │   │   # NOTE: have to use super() here so that we don't recursively                     │
+│    593 │   │   #       call subclass's wrapped _calc_checksum, e.g. bcrypt_sha256._calc_checksu  │
+│    594 │   │   return super(bcrypt, self)._calc_checksum(secret)                                 │
+│                                                                                                  │
+│ ╭────────────────────────────────────────── locals ──────────────────────────────────────────╮   │
+│ │ secret = 'Miranda2026.'                                                                    │   │
+│ │   self = <passlib.handlers.bcrypt.<customized bcrypt hasher> object at 0x000002141E4611C0> │   │
+│ ╰────────────────────────────────────────────────────────────────────────────────────────────╯   │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2254 in           │
+│ _stub_requires_backend                                                                           │
+│                                                                                                  │
+│   2251 │   │   if cls.__backend:                                                                 │
+│   2252 │   │   │   raise AssertionError("%s: _finalize_backend(%r) failed to replace lazy loade  │
+│   2253 │   │   │   │   │   │   │   │    (cls.name, cls.__backend))                               │
+│ ❱ 2254 │   │   cls.set_backend()                                                                 │
+│   2255 │   │   if not cls.__backend:                                                             │
+│   2256 │   │   │   raise AssertionError("%s: set_backend() failed to load a default backend" %   │
+│   2257 │   │   │   │   │   │   │   │    (cls.name))                                              │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2156 in           │
+│ set_backend                                                                                      │
+│                                                                                                  │
+│   2153 │   │   # find that class, and recursively call this method for the proper class.         │
+│   2154 │   │   owner = cls._get_backend_owner()                                                  │
+│   2155 │   │   if owner is not cls:                                                              │
+│ ❱ 2156 │   │   │   return owner.set_backend(name, dryrun=dryrun)                                 │
+│   2157 │   │                                                                                     │
+│   2158 │   │   # pick first available backend                                                    │
+│   2159 │   │   if name == "any" or name == "default":                                            │
+│                                                                                                  │
+│ ╭──── locals ────╮                                                                               │
+│ │ dryrun = False │                                                                               │
+│ │   name = 'any' │                                                                               │
+│ ╰────────────────╯                                                                               │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2163 in           │
+│ set_backend                                                                                      │
+│                                                                                                  │
+│   2160 │   │   │   default_error = None                                                          │
+│   2161 │   │   │   for name in cls.backends:                                                     │
+│   2162 │   │   │   │   try:                                                                      │
+│ ❱ 2163 │   │   │   │   │   return cls.set_backend(name, dryrun=dryrun)                           │
+│   2164 │   │   │   │   except exc.MissingBackendError:                                           │
+│   2165 │   │   │   │   │   continue                                                              │
+│   2166 │   │   │   │   except exc.PasslibSecurityError as err:                                   │
+│                                                                                                  │
+│ ╭───────── locals ─────────╮                                                                     │
+│ │ default_error = None     │                                                                     │
+│ │        dryrun = False    │                                                                     │
+│ │          name = 'bcrypt' │                                                                     │
+│ ╰──────────────────────────╯                                                                     │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2188 in           │
+│ set_backend                                                                                      │
+│                                                                                                  │
+│   2185 │   │   │   try:                                                                          │
+│   2186 │   │   │   │   cls._pending_backend = name                                               │
+│   2187 │   │   │   │   cls._pending_dry_run = dryrun                                             │
+│ ❱ 2188 │   │   │   │   cls._set_backend(name, dryrun)                                            │
+│   2189 │   │   │   finally:                                                                      │
+│   2190 │   │   │   │   cls._pending_backend, cls._pending_dry_run = orig                         │
+│   2191 │   │   │   if not dryrun:                                                                │
+│                                                                                                  │
+│ ╭──────── locals ────────╮                                                                       │
+│ │ dryrun = False         │                                                                       │
+│ │   name = 'bcrypt'      │                                                                       │
+│ │   orig = (None, False) │                                                                       │
+│ ╰────────────────────────╯                                                                       │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2311 in           │
+│ _set_backend                                                                                     │
+│                                                                                                  │
+│   2308 │   @classmethod                                                                          │
+│   2309 │   def _set_backend(cls, name, dryrun):                                                  │
+│   2310 │   │   # invoke backend loader (will throw error if fails)                               │
+│ ❱ 2311 │   │   super(SubclassBackendMixin, cls)._set_backend(name, dryrun)                       │
+│   2312 │   │                                                                                     │
+│   2313 │   │   # sanity check call args (should trust .set_backend, but will really              │
+│   2314 │   │   # foul things up if this isn't the owner)                                         │
+│                                                                                                  │
+│ ╭───── locals ──────╮                                                                            │
+│ │ dryrun = False    │                                                                            │
+│ │   name = 'bcrypt' │                                                                            │
+│ ╰───────────────────╯                                                                            │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:2224 in           │
+│ _set_backend                                                                                     │
+│                                                                                                  │
+│   2221 │   │   │   kwds['name'] = name                                                           │
+│   2222 │   │   if accepts_keyword(loader, "dryrun"):                                             │
+│   2223 │   │   │   kwds['dryrun'] = dryrun                                                       │
+│ ❱ 2224 │   │   ok = loader(**kwds)                                                               │
+│   2225 │   │   if ok is False:                                                                   │
+│   2226 │   │   │   raise exc.MissingBackendError("%s: backend not available: %s" %               │
+│   2227 │   │   │   │   │   │   │   │   │   │     (cls.name, name))                               │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ dryrun = False                                                                               │ │
+│ │   kwds = {'name': 'bcrypt', 'dryrun': False}                                                 │ │
+│ │ loader = <bound method _BcryptBackend._load_backend_mixin of <class                          │ │
+│ │          'passlib.handlers.bcrypt._BcryptBackend'>>                                          │ │
+│ │   name = 'bcrypt'                                                                            │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py:626 in           │
+│ _load_backend_mixin                                                                              │
+│                                                                                                  │
+│    623 │   │   │   version = '<unknown>'                                                         │
+│    624 │   │                                                                                     │
+│    625 │   │   log.debug("detected 'bcrypt' backend, version %r", version)                       │
+│ ❱  626 │   │   return mixin_cls._finalize_backend_mixin(name, dryrun)                            │
+│    627 │                                                                                         │
+│    628 │   # # TODO: would like to implementing verify() directly,                               │
+│    629 │   # #       to skip need for parsing hash strings.                                      │
+│                                                                                                  │
+│ ╭─────── locals ────────╮                                                                        │
+│ │  dryrun = False       │                                                                        │
+│ │    name = 'bcrypt'    │                                                                        │
+│ │ version = '<unknown>' │                                                                        │
+│ ╰───────────────────────╯                                                                        │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py:421 in           │
+│ _finalize_backend_mixin                                                                          │
+│                                                                                                  │
+│    418 │   │   │   raise RuntimeError("%s incorrectly rejected $2a$ hash" % backend)             │
+│    419 │   │   else:                                                                             │
+│    420 │   │   │   assert_lacks_8bit_bug(IDENT_2A)                                               │
+│ ❱  421 │   │   │   if detect_wrap_bug(IDENT_2A):                                                 │
+│    422 │   │   │   │   if backend == "os_crypt":                                                 │
+│    423 │   │   │   │   │   # don't make this a warning for os crypt (e.g. openbsd);              │
+│    424 │   │   │   │   │   # they'll have proper 2b implementation which will be used for new h  │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │      backend = 'bcrypt'                                                                      │ │
+│ │       dryrun = False                                                                         │ │
+│ │    err_types = (<class 'ValueError'>, <class 'passlib.exc.MissingBackendError'>)             │ │
+│ │       result = True                                                                          │ │
+│ │ test_hash_20 = b'$2$04$5BJqKfqMQvV7nS.yUguNcuRfMMOXK0xPWavM7pOzjEi5ze5T1k8/S'                │ │
+│ │       verify = <bound method GenericHandler.verify of <class                                 │ │
+│ │                'passlib.handlers.bcrypt._BcryptBackend'>>                                    │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py:380 in           │
+│ detect_wrap_bug                                                                                  │
+│                                                                                                  │
+│    377 │   │   │   # check if it exhibits wraparound bug                                         │
+│    378 │   │   │   secret = (b"0123456789"*26)[:255]                                             │
+│    379 │   │   │   bug_hash = ident.encode("ascii") + b"04$R1lJ2gkNaoPGdafE.H.16.nVyh2niHsGJhay  │
+│ ❱  380 │   │   │   if verify(secret, bug_hash):                                                  │
+│    381 │   │   │   │   return True                                                               │
+│    382 │   │   │                                                                                 │
+│    383 │   │   │   # if it doesn't have wraparound bug, make sure it *does* handle things        │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │  backend = 'bcrypt'                                                                          │ │
+│ │ bug_hash = b'$2a$04$R1lJ2gkNaoPGdafE.H.16.nVyh2niHsGJhayOHLMiXlI45o8/DU.6'                   │ │
+│ │    ident = '$2a$'                                                                            │ │
+│ │   secret = b'012345678901234567890123456789012345678901234567890123456789012345678901234567… │ │
+│ │   verify = <bound method GenericHandler.verify of <class                                     │ │
+│ │            'passlib.handlers.bcrypt._BcryptBackend'>>                                        │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py:792 in verify     │
+│                                                                                                  │
+│    789 │   │   chk = self.checksum                                                               │
+│    790 │   │   if chk is None:                                                                   │
+│    791 │   │   │   raise exc.MissingDigestError(cls)                                             │
+│ ❱  792 │   │   return consteq(self._calc_checksum(secret), chk)                                  │
+│    793 │                                                                                         │
+│    794 │   #===================================================================                  │
+│    795 │   # legacy crypt interface                                                              │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │     chk = 'nVyh2niHsGJhayOHLMiXlI45o8/DU.6'                                                  │ │
+│ │ context = {}                                                                                 │ │
+│ │    hash = b'$2a$04$R1lJ2gkNaoPGdafE.H.16.nVyh2niHsGJhayOHLMiXlI45o8/DU.6'                    │ │
+│ │  secret = b'0123456789012345678901234567890123456789012345678901234567890123456789012345678… │ │
+│ │    self = <passlib.handlers.bcrypt._BcryptBackend object at 0x000002141C9B23F0>              │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│                                                                                                  │
+│ C:\Users\Paul P\Documents\Personal                                                               │
+│ Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py:655 in           │
+│ _calc_checksum                                                                                   │
+│                                                                                                  │
+│    652 │   │   config = self._get_config(ident)                                                  │
+│    653 │   │   if isinstance(config, unicode):                                                   │
+│    654 │   │   │   config = config.encode("ascii")                                               │
+│ ❱  655 │   │   hash = _bcrypt.hashpw(secret, config)                                             │
+│    656 │   │   assert isinstance(hash, bytes)                                                    │
+│    657 │   │   if not hash.startswith(config) or len(hash) != len(config)+31:                    │
+│    658 │   │   │   raise uh.exc.CryptBackendError(self, config, hash, source="`bcrypt` package"  │
+│                                                                                                  │
+│ ╭─────────────────────────────────────────── locals ───────────────────────────────────────────╮ │
+│ │ config = b'$2a$04$R1lJ2gkNaoPGdafE.H.16.'                                                    │ │
+│ │  ident = '$2a$'                                                                              │ │
+│ │ secret = b'01234567890123456789012345678901234567890123456789012345678901234567890123456789… │ │
+│ │   self = <passlib.handlers.bcrypt._BcryptBackend object at 0x000002141C9B23F0>               │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g.
+my_password[:72])
+
+INFO:     127.0.0.1:64362 - "POST /api/v1/auth/register HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 401, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 62, in wrapped_app
+    raise exc
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 51, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\app\api\authors.py", line 31, in register
+    hashed_password=hash_password(data.password),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\app\core\security.py", line 47, in hash_password
+    return _pwd_context.hash(plain)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\context.py", line 2258, in hash
+    return record.hash(secret, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 779, in hash
+    self.checksum = self._calc_checksum(secret)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 591, in _calc_checksum
+    self._stub_requires_backend()
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2254, in _stub_requires_backend
+    cls.set_backend()
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2156, in set_backend
+    return owner.set_backend(name, dryrun=dryrun)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2163, in set_backend
+    return cls.set_backend(name, dryrun=dryrun)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2188, in set_backend
+    cls._set_backend(name, dryrun)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2311, in _set_backend
+    super(SubclassBackendMixin, cls)._set_backend(name, dryrun)
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 2224, in _set_backend
+    ok = loader(**kwds)
+         ^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 626, in _load_backend_mixin
+    return mixin_cls._finalize_backend_mixin(name, dryrun)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 421, in _finalize_backend_mixin
+    if detect_wrap_bug(IDENT_2A):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 380, in detect_wrap_bug
+    if verify(secret, bug_hash):
+       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\utils\handlers.py", line 792, in verify
+    return consteq(self._calc_checksum(secret), chk)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 655, in _calc_checksum
+    hash = _bcrypt.hashpw(secret, config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])  
+INFO:     Waiting for application shutdown.
+2026-05-17T18:17:56.620814Z [info     ] app.shutdown                   [app.main] reason=lifespan_complete   
+INFO:     Application shutdown complete.
+INFO:     Finished server process [36968]
+WARNING:  WatchFiles detected changes in 'app\api\authors.py'. Reloading...
+INFO:     Started server process [14456]
+INFO:     Waiting for application startup.
+2026-05-17T18:17:58.200932Z [info     ] app.startup                    [app.main] app=ReviewPulse environment=development llm_provider=anthropic version=0.1.0
+INFO:     Application startup complete.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\Paul P\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run    
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 685, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Paul P\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run    
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run    
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\starlette\routing.py", line 700, in lifespan
+    await receive()
+  File "C:\Users\Paul P\Documents\Personal Projects\ReviewPulse\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Paul P\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get     
+    await getter
+asyncio.exceptions.CancelledError
+
+INFO:     Started server process [29260]
+INFO:     Waiting for application startup.
+2026-05-17T18:17:59.635572Z [info     ] app.startup                    [app.main] app=ReviewPulse environment=development llm_provider=anthropic version=0.1.0
+INFO:     Application startup complete.

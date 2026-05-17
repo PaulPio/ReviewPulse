@@ -33,6 +33,7 @@ async def register(data: AuthorRegister, db: AsyncSession = Depends(get_db)):
     )
     db.add(author)
     await db.flush()
+    await db.refresh(author)
 
     token = create_access_token(str(author.id))
     return TokenOut(access_token=token, author=AuthorOut.model_validate(author))
@@ -48,6 +49,7 @@ async def login(data: AuthorLogin, db: AsyncSession = Depends(get_db)):
 
     author.last_login_at = datetime.now(timezone.utc)
     await db.flush()
+    await db.refresh(author)
 
     token = create_access_token(str(author.id))
     return TokenOut(access_token=token, author=AuthorOut.model_validate(author))
