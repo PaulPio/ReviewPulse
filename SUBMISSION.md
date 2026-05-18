@@ -98,7 +98,7 @@ Unless noted, paths are relative to **`/api/v1`** (e.g. full URL `http://localho
 **To verify live LLM + metrics costs end-to-end**
 
 1. `docker-compose up -d db redis`
-2. Configure `.env`: `DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, `LLM_PROVIDER`, matching API keys, and **OpenAI** for embeddings if you exercise embedding writes.
+2. Configure `.env`: `DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, plus provider keys for live calls. Defaults use **OpenRouter** for both LLM and embeddings (`LLM_PROVIDER`, `EMBEDDING_PROVIDER`, **`OPENROUTER_API_KEY`** — see `backend/.env.example`). Alternatively set **`OPENAI_API_KEY`** if you point embeddings (or the LLM) at OpenAI directly.
 3. `alembic upgrade head`; seed with **`python -m scripts.seed_db`** (or Kaggle seed — same demo accounts).
 4. Start API: `uvicorn app.main:app --reload --port 8000`
 5. Start worker: `celery -A app.workers.celery_app worker --loglevel=info`
@@ -187,7 +187,7 @@ REDIS_URL=redis://localhost:6379/0
 SECRET_KEY=any-random-string
 ```
 
-Add **`LLM_PROVIDER`**, **`ANTHROPIC_API_KEY`** (or other provider vars), and **`OPENAI_API_KEY`** when exercising **live** analysis + embeddings.
+Add **`OPENROUTER_API_KEY`** (recommended defaults) or the keys for whichever **`LLM_PROVIDER`** / **`EMBEDDING_PROVIDER`** you select (`backend/.env.example`) when exercising **live** analysis + embedding writes.
 
 ---
 
@@ -221,7 +221,7 @@ Same as [Live demo (deployed)](#live-demo-deployed) above: frontend **https://re
 
 - **Works:** Login/register, catalog, book detail (charts + reviews), compare, digest, what’s new — seeded reviews carry analysis fields from JSON targets.
 - **Does not run without Redis + worker:** `POST /books/{id}/ingest`, Celery-backed jobs.
-- **Semantic search:** The `/search` path only surfaces rows with non-null **`embedding`**. `seed_db` / current seed scripts **do not** populate embeddings, so **Search may return no rows** until embeddings exist (e.g. a future one-off embed job or live ingestion with `OPENAI_API_KEY`). Say so in the demo if asked.
+- **Semantic search:** The `/search` path only surfaces rows with non-null **`embedding`**. `seed_db` / current seed scripts **do not** populate embeddings, so **Search may return no rows** until embeddings exist (e.g. live ingestion with **`OPENROUTER_API_KEY`** / configured embedding provider, or a one-off embed job). Say so in the demo if asked.
 
 ### Full stack later
 
@@ -239,7 +239,7 @@ Add **Redis**, a **Celery worker** process (same codebase, worker command), and 
 | Supabase Auth RS256 | HS256 JWT is the active path |
 | WebSocket job progress | Frontend polls `/jobs/{id}`; WebSocket not implemented |
 | Email delivery for digest | Digest API preview only; no SendGrid/Resend |
-| Production deployment | **Live:** [review-pulse-delta.vercel.app](https://review-pulse-delta.vercel.app) + [reviewpulse-7mgz.onrender.com](https://reviewpulse-7mgz.onrender.com). No `render.yaml` / `vercel.json` in-repo; **read-only demo deploy playbook** is documented above |
+| Production deployment | **Live:** [review-pulse-delta.vercel.app](https://review-pulse-delta.vercel.app) + [reviewpulse-7mgz.onrender.com](https://reviewpulse-7mgz.onrender.com). No `render.yaml` in-repo; SPA rewrites live in [`frontend/vercel.json`](frontend/vercel.json). **Read-only demo deploy playbook** is documented above |
 
 ---
 

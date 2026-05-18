@@ -15,7 +15,7 @@ Built as a take-home for Tweeds. Stack mirrors Tweeds' production environment: F
 | Workers | Celery + Redis |
 | Frontend | React 18 + TypeScript + Vite + Tailwind CSS + Recharts |
 | Auth | Self-issued JWT (HS256) — Supabase-ready abstraction |
-| LLM | Anthropic (primary) / OpenAI / Gemini / OpenRouter (fallback) |
+| LLM | **OpenRouter** (default) — also Anthropic, OpenAI, Gemini; primary + optional fallback via env (`LLM_PROVIDER`, `LLM_FALLBACK_PROVIDER`) |
 | Embeddings | `text-embedding-3-small` (1536 dims), default via **OpenRouter** (`openai/text-embedding-3-small`) or direct OpenAI |
 
 ---
