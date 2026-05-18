@@ -36,12 +36,17 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
+    _cors_allow = (
+        ["http://localhost:5173", "http://localhost:3000"]
+        + [str(o) for o in settings.cors_origins]
+    )
     logger.info(
         "app.startup",
         app=settings.app_name,
         version=settings.app_version,
         environment=settings.environment,
         llm_provider=settings.llm_provider,
+        cors_allow_origins=_cors_allow,
     )
     yield
     # Dispose the connection pool cleanly on shutdown

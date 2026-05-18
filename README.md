@@ -301,6 +301,20 @@ Common causes:
 2. **`CORS_ORIGINS`** — Must be full origins with scheme, comma-separated, e.g. `https://review-pulse-delta.vercel.app`. Invalid values can fail validation at startup.
 3. **Logs** — Open the service **Logs** tab for the Python traceback (not only the build log).
 
+### Browser: **CORS policy** / **Failed to fetch** (Vercel → Render)
+
+The API must allow your frontend **origin**. On **Render** → Web Service → **Environment**, set:
+
+```env
+CORS_ORIGINS=https://review-pulse-delta.vercel.app
+```
+
+Use the **exact** production URL (scheme + host, **no** path). For extra origins (e.g. preview deploys), use a comma-separated list. **Save**, then **restart/redeploy** the service.
+
+After deploy, check Render logs for **`cors_allow_origins`** in the startup line — your Vercel URL should appear in that list. If the list only shows localhost, `CORS_ORIGINS` was empty or misnamed (`CORS_ORIGINS`, not `ALLOWED_ORIGINS`).
+
+If the instance was **asleep**, the first request may return a non-JSON page without CORS headers; wait for wake-up and retry.
+
 ---
 
 ## Known Limitations / Future Work
