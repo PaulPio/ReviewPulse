@@ -152,7 +152,7 @@ class Settings(BaseSettings):
     # LLM Providers
     # ------------------------------------------------------------------ #
     # Primary provider: "anthropic" | "openai" | "gemini" | "openrouter"
-    llm_provider: Literal["anthropic", "openai", "gemini", "openrouter"] = "anthropic"
+    llm_provider: Literal["anthropic", "openai", "gemini", "openrouter"] = "openrouter"
     llm_fallback_provider: Literal["anthropic", "openai", "gemini", "openrouter"] | None = "openai"
 
     anthropic_api_key: str = ""
@@ -178,7 +178,7 @@ class Settings(BaseSettings):
     # Max reviews to generate per book in synthetic mode
     synthetic_reviews_per_book: int = 50
     # Embedding provider: "openai" (direct) or "openrouter" (via gateway)
-    embedding_provider: Literal["openai", "openrouter"] = "openai"
+    embedding_provider: Literal["openai", "openrouter"] = "openrouter"
     # Model slug — for OpenRouter prefix with "openai/", e.g. "openai/text-embedding-3-small"
     embedding_model: str = "text-embedding-3-small"
     embedding_dimensions: int = 1536
@@ -217,6 +217,20 @@ class Settings(BaseSettings):
         s = s.strip()
         if not s or s.startswith("#"):
             return None
+        return s
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def strip_wrapping_quotes_database_url(cls, v: object) -> object:
+        """`.env` may wrap URIs in quotes; remove duplicate wrapping only."""
+        if not isinstance(v, str):
+            return v
+        v = _strip_trailing_dotenv_comment(v)
+        if not isinstance(v, str):
+            return v
+        s = v.strip()
+        if len(s) >= 2 and s[0] == s[-1] and s[0] in "\"'":
+            return s[1:-1].strip()
         return s
 
     @field_validator("database_url", mode="before")

@@ -3,9 +3,9 @@ Text embedding service for semantic search (F4).
 
 Supports two providers, both via the OpenAI SDK (compatible API):
   - openai     : direct OpenAI API  (model: "text-embedding-3-small")
-  - openrouter : OpenRouter gateway (model: "openai/text-embedding-3-small")
+  - openrouter : OpenRouter gateway (model resolved as "openai/text-embedding-3-small")
 
-Set EMBEDDING_PROVIDER=openrouter in .env to route through OpenRouter.
+Default in settings is OpenRouter; set EMBEDDING_PROVIDER=openai for direct OpenAI.
 The model name is automatically prefixed with "openai/" when using OpenRouter
 if it isn't already.
 

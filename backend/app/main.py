@@ -19,6 +19,9 @@ Available in all environments; disable in production by setting docs_url=None.
 """
 
 from contextlib import asynccontextmanager
+import json
+import time
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,18 +31,59 @@ from app.core.config import settings
 from app.core.logging import configure_logging, get_logger
 from app.api.router import api_router
 
+_DEFAULT_DEV_ORIGINS: tuple[str, ...] = ("http://localhost:5173", "http://localhost:3000")
+
 # Configure structured logging before anything else
 configure_logging()
 logger = get_logger(__name__)
+
+_DEBUG_LOG_PATH = Path(__file__).resolve().parents[2] / "debug-055189.log"
+
+
+def _allowed_cors_origins() -> frozenset[str]:
+    return frozenset((*_DEFAULT_DEV_ORIGINS, *settings.cors_origins))
+
+
+def _cors_headers_for_request(request: Request) -> dict[str, str]:
+    """Mirror CORSMiddleware allowlist so error bodies stay readable in browsers."""
+    origin = request.headers.get("origin")
+    if origin and origin in _allowed_cors_origins():
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Vary": "Origin",
+        }
+    return {}
+
+
+def _agent_debug_exception(request: Request, exc: Exception) -> None:
+    # region agent log
+    try:
+        payload = {
+            "sessionId": "055189",
+            "timestamp": int(time.time() * 1000),
+            "location": "app.main",
+            "message": "request.unhandled_error.debug",
+            "hypothesisId": "H500-CORS",
+            "data": {
+                "path": request.url.path,
+                "method": request.method,
+                "origin_header_present": bool(request.headers.get("origin")),
+                "exc_type": type(exc).__name__,
+                "exc_preview": str(exc)[:200],
+            },
+        }
+        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as dbg:
+            dbg.write(json.dumps(payload) + "\n")
+    except Exception:
+        pass
+    # endregion
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
-    _cors_allow = (
-        ["http://localhost:5173", "http://localhost:3000"]
-        + list(settings.cors_origins)
-    )
+    _cors_allow = list(_DEFAULT_DEV_ORIGINS) + list(settings.cors_origins)
     logger.info(
         "app.startup",
         app=settings.app_name,
@@ -72,10 +116,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=(
-        ["http://localhost:5173", "http://localhost:3000"]
-        + list(settings.cors_origins)
-    ),
+    allow_origins=list(_DEFAULT_DEV_ORIGINS) + list(settings.cors_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -95,9 +136,11 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
         error=str(exc),
         exc_info=True,
     )
+    _agent_debug_exception(request, exc)
     return JSONResponse(
         status_code=500,
         content={"detail": "An internal error occurred. Check server logs."},
+        headers=_cors_headers_for_request(request),
     )
 
 

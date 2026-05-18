@@ -26,6 +26,10 @@ PRICING: dict[str, dict[str, dict[str, float]]] = {
         "gpt-4o": {"input": 0.0025, "output": 0.01},
         "text-embedding-3-small": {"input": 0.00002, "output": 0.0},
     },
+    # OpenRouter slugs — mirror upstream where pricing matches routed provider
+    "openrouter": {
+        "openai/text-embedding-3-small": {"input": 0.00002, "output": 0.0},
+    },
     "gemini": {
         "gemini-1.5-flash": {"input": 0.000075, "output": 0.0003},
         "gemini-1.5-pro": {"input": 0.00125, "output": 0.005},

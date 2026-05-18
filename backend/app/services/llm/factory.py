@@ -8,7 +8,7 @@ Usage:
     client = get_llm_client()
     response = await client.complete(prompt, system)
 
-Swap providers without code changes by setting LLM_PROVIDER=openai in .env.
+Swap providers without code changes by setting LLM_PROVIDER in .env (code default: openrouter).
 """
 
 from __future__ import annotations

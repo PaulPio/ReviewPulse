@@ -16,7 +16,7 @@ Built as a take-home for Tweeds. Stack mirrors Tweeds' production environment: F
 | Frontend | React 18 + TypeScript + Vite + Tailwind CSS + Recharts |
 | Auth | Self-issued JWT (HS256) — Supabase-ready abstraction |
 | LLM | Anthropic (primary) / OpenAI / Gemini / OpenRouter (fallback) |
-| Embeddings | OpenAI `text-embedding-3-small` (1536 dims) |
+| Embeddings | `text-embedding-3-small` (1536 dims), default via **OpenRouter** (`openai/text-embedding-3-small`) or direct OpenAI |
 
 ---
 
@@ -86,11 +86,11 @@ DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/reviewpulse
 REDIS_URL=redis://localhost:6379/0
 SECRET_KEY=any-long-random-string
 
-# At least one LLM provider key
-LLM_PROVIDER=anthropic
-ANTHROPIC_API_KEY=sk-ant-...
+# At least one LLM provider key (defaults use OpenRouter if LLM_PROVIDER unset)
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-...
 
-# Optional fallback
+# Optional fallback when primary fails (e.g. openai)
 LLM_FALLBACK_PROVIDER=openai
 OPENAI_API_KEY=sk-...
 ```
@@ -315,6 +315,8 @@ python -m scripts.seed_db   # demo accounts (maya@demo.com / Demo1234) + books +
 ```
 
 Use `postgresql://` or `postgresql+asyncpg://`; the app normalizes the scheme. Neon often appends `?sslmode=require` — that is fine: the backend removes `sslmode` for asyncpg and turns on TLS via `connect_args`, including **`alembic upgrade head`**. After `upgrade head`, refresh Neon Tables — you should see `authors`, `books`, `reviews`, etc.
+
+**`InvalidPasswordError` / still 0 tables:** Migrations never ran successfully. In **Git Bash**, an unquoted Neon URL breaks at **`&`** (`channel_binding=require` looks like a shell background job — you may see `[1] 5571`). Prefer storing the **full** URI in **`backend/.env`** as `DATABASE_URL=...` (one line) and running `alembic upgrade head` from `backend/` without `export`. Or quote the whole URL: `export DATABASE_URL='postgresql://...require&channel_binding=require'`. Then copy the **same** value into Render. If the password was reset or exposed, use Neon **Reset password** and update every copy.
 
 Often the real failure is **database access** (missing TLS, wrong `DATABASE_URL`, or schema not migrated). The browser may still report **CORS** if the error response does not include expected headers. Fix the traceback in Render logs first. After deploy, confirm startup logs include **`database_ssl=True`** when using Neon. Demo users require **`seed_db`** (or registration) after migrations.
 

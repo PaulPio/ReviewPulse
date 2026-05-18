@@ -66,7 +66,7 @@ Tests use a real PostgreSQL DB (`reviewpulse_test`) — never mocked. Each test 
 - `schemas/` — Pydantic request/response models
 - `services/analysis.py` — calls LLM, validates response with `AnalysisResult` Pydantic model
 - `services/ingestion.py` — loads reviews from seed JSON into DB
-- `services/embedding.py` — generates 1536-dim embeddings via OpenAI
+- `services/embedding.py` — generates 1536-dim embeddings (default: OpenRouter → `openai/text-embedding-3-small`, or direct OpenAI)
 - `services/llm/` — provider abstraction: `base.py` (protocol), `factory.py` (selects primary + fallback), individual clients for `anthropic`, `openai`, `gemini`, `openrouter`
 - `tasks/ingestion.py` — Celery task that runs the full pipeline: fetch reviews → LLM analyze → embed → record usage → fire webhook
 - `workers/celery_app.py` — Celery app config (Redis broker)
@@ -79,7 +79,7 @@ Embeddings are stored as `ARRAY(Float)` (not native pgvector `vector` type — a
 
 ### LLM pipeline
 
-Provider selection via `LLM_PROVIDER` env var (default: `anthropic`, fallback: `openai`). `get_llm_client_with_fallback()` in `factory.py` returns `(primary, fallback | None)`. Analysis service tries primary first, then fallback; individual review failures don't abort the whole job (recorded in `error_details` JSONB on `IngestionJob`).
+Provider selection via `LLM_PROVIDER` env var (default in code: `openrouter`, typical fallback: `openai`). `get_llm_client_with_fallback()` in `factory.py` returns `(primary, fallback | None)`. Analysis service tries primary first, then fallback; individual review failures don't abort the whole job (recorded in `error_details` JSONB on `IngestionJob`).
 
 ### Frontend (`frontend/src/`)
 
