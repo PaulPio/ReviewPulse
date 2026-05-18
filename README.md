@@ -293,6 +293,14 @@ Render must use **Python 3.12.x**, not 3.14: newer Python triggers source builds
 
 Commit `runtime.txt`, redeploy, and confirm build logs show **Python 3.12**, not 3.14.
 
+### Render: build succeeds but **Exited with status 1**
+
+Common causes:
+
+1. **`DATABASE_URL`** — Use **`postgresql+asyncpg://…`** for this app (Neon’s dashboard often copies `postgresql://…`; the backend coerces that automatically, but a wrong driver prefix elsewhere will still break).
+2. **`CORS_ORIGINS`** — Must be full origins with scheme, comma-separated, e.g. `https://review-pulse-delta.vercel.app`. Invalid values can fail validation at startup.
+3. **Logs** — Open the service **Logs** tab for the Python traceback (not only the build log).
+
 ---
 
 ## Known Limitations / Future Work

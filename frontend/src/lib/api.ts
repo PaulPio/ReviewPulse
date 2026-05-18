@@ -1,6 +1,5 @@
 import { getToken } from '@/hooks/useAuth'
-
-const API_BASE = import.meta.env.VITE_API_URL || '/api/v1'
+import { API_BASE } from '@/lib/apiBase'
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken()

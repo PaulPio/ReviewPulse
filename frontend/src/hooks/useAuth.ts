@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
+import { API_BASE } from '@/lib/apiBase'
+
 const TOKEN_KEY = 'rp_access_token'
 const USER_KEY = 'rp_user'
 
@@ -29,7 +31,7 @@ export function useAuth() {
       setUser(null)
       return
     }
-    fetch('/api/v1/auth/me', {
+    fetch(`${API_BASE}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => (r.ok ? r.json() : Promise.reject()))
@@ -47,7 +49,7 @@ export function useAuth() {
   const signIn = useCallback(async (email: string, password: string) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -68,7 +70,7 @@ export function useAuth() {
   const signUp = useCallback(async (email: string, password: string, name: string) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/v1/auth/register', {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, display_name: name }),

@@ -29,7 +29,6 @@ from app.models.llm_usage import LLMUsage
 from app.models.review import Review
 from app.schemas.book import BookCreate, BookOut, BookWithStats
 from app.schemas.job import JobOut
-from app.tasks.ingestion import run_ingestion_job
 
 router = APIRouter()
 
@@ -164,6 +163,9 @@ async def trigger_ingestion(
     db.add(job)
     await db.flush()
     await db.refresh(job)
+
+    # Deferred import so API startup does not load Celery/broker (fine on Render without Redis).
+    from app.tasks.ingestion import run_ingestion_job
 
     task = run_ingestion_job.delay(str(job.id))
     job.celery_task_id = task.id

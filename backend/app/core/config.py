@@ -149,6 +149,31 @@ class Settings(BaseSettings):
             return None
         return s
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def coerce_async_database_url(cls, v: object) -> object:
+        """
+        Hosted Postgres URLs are often pasted as postgresql://… — SQLAlchemy async
+        needs postgresql+asyncpg:// or startup/import fails for the async engine.
+        """
+        if not isinstance(v, str):
+            return v
+        v = _strip_trailing_dotenv_comment(v)
+        if not isinstance(v, str):
+            return v
+        url = v.strip()
+        if "://" not in url:
+            return url
+        scheme, _, remainder = url.partition("://")
+        if "+" in scheme:
+            return url
+        base = scheme.lower()
+        if base == "postgres":
+            base = "postgresql"
+        if base == "postgresql":
+            return f"postgresql+asyncpg://{remainder}"
+        return url
+
     # ------------------------------------------------------------------ #
     # Derived
     # ------------------------------------------------------------------ #
