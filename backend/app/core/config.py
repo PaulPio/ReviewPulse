@@ -19,6 +19,11 @@ def _strip_trailing_dotenv_comment(value: object) -> object:
     return value
 
 
+def _normalize_browser_origin(url: AnyHttpUrl) -> str:
+    """Browsers send `Origin` without a trailing slash; CORS match is exact."""
+    return str(url).rstrip("/")
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -179,14 +184,16 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------ #
     @computed_field
     @property
-    def cors_origins(self) -> list[AnyHttpUrl]:
+    def cors_origins(self) -> list[str]:
         raw = self.cors_origins_raw.strip()
         if not raw:
             return []
         if raw.startswith("["):
-            return TypeAdapter(list[AnyHttpUrl]).validate_json(raw)
-        parts = [o.strip() for o in raw.split(",") if o.strip()]
-        return TypeAdapter(list[AnyHttpUrl]).validate_python(parts)
+            parsed = TypeAdapter(list[AnyHttpUrl]).validate_json(raw)
+        else:
+            parts = [o.strip() for o in raw.split(",") if o.strip()]
+            parsed = TypeAdapter(list[AnyHttpUrl]).validate_python(parts)
+        return [_normalize_browser_origin(u) for u in parsed]
 
 
 @lru_cache

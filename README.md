@@ -109,7 +109,7 @@ After running the Kaggle seeder, three demo accounts are available (password: `D
 
 ## API Reference
 
-Base URL: `http://localhost:8000/api/v1`
+Base URL: `https://reviewpulse-7mgz.onrender.com/docs`
 
 ### Auth
 
@@ -309,11 +309,15 @@ The API must allow your frontend **origin**. On **Render** → Web Service → *
 CORS_ORIGINS=https://review-pulse-delta.vercel.app
 ```
 
-Use the **exact** production URL (scheme + host, **no** path). For extra origins (e.g. preview deploys), use a comma-separated list. **Save**, then **restart/redeploy** the service.
+Use the **exact** production URL (scheme + host, **no** path). A trailing slash in the env value is OK — the API strips it so it matches the browser `Origin` header. For extra origins (e.g. preview deploys), use a comma-separated list. **Save**, then **restart/redeploy** the service.
 
-After deploy, check Render logs for **`cors_allow_origins`** in the startup line — your Vercel URL should appear in that list. If the list only shows localhost, `CORS_ORIGINS` was empty or misnamed (`CORS_ORIGINS`, not `ALLOWED_ORIGINS`).
+After redeploy, check Render logs for **`cors_allow_origins`** — your Vercel URL should appear **without** a trailing slash. If the list only shows localhost, `CORS_ORIGINS` was empty or misnamed (`CORS_ORIGINS`, not `ALLOWED_ORIGINS`).
 
-If the instance was **asleep**, the first request may return a non-JSON page without CORS headers; wait for wake-up and retry.
+### Vercel: **404** on refresh (`/login`, `/books/…`)
+
+React Router needs every path to serve **`index.html`**. The repo includes [`frontend/vercel.json`](frontend/vercel.json) with an SPA rewrite. Commit it, redeploy Vercel, then hard-refresh or open `/login` again.
+
+If the Render instance was **asleep**, the first API request may return a non-JSON page without CORS headers; wait for wake-up and retry.
 
 ---
 

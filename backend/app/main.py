@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
     _cors_allow = (
         ["http://localhost:5173", "http://localhost:3000"]
-        + [str(o) for o in settings.cors_origins]
+        + list(settings.cors_origins)
     )
     logger.info(
         "app.startup",
@@ -73,7 +73,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=(
         ["http://localhost:5173", "http://localhost:3000"]
-        + [str(o) for o in settings.cors_origins]
+        + list(settings.cors_origins)
     ),
     allow_credentials=True,
     allow_methods=["*"],
