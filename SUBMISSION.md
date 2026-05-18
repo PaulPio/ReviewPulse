@@ -243,7 +243,9 @@ Add **Redis**, a **Celery worker** process (same codebase, worker command), and 
 
 ---
 
-## Time Breakdown (~8 hours total)
+## Time Breakdown (~11 hours total)
+
+Rough split: **~8 hours** on the take-home itself (planning through polish), plus **~3 hours** getting the **live** stack wired — **Vercel** (frontend), **Render** (API), and **Neon** (Postgres + pgvector).
 
 **~1 hour — Planning with Claude Code**  
 Worked through the spec iteratively with Claude as a planning partner. This is where I mapped out the full architecture, identified the multi-tenant isolation pattern, chose the LLM provider abstraction design, and laid out the component hierarchy for the frontend. The plan document still lives in `.claude/plans/`.
@@ -258,6 +260,11 @@ This is where the real time went. The main friction points:
 - SQLAlchemy 2's `Row` doesn't expose aliases from `text("...AS alias")` — had to switch to `literal_column("...").label("alias")` for reliable attribute access  
 - The digest and what's-new endpoints were wrapping their response in `{ "data": { ... } }` while every other endpoint returned data directly — the frontend was silently receiving the wrong shape  
 - Getting Recharts to respect CSS variables for colors and borders took more iteration than expected  
+
+**~3 hours — Deploying the public demo**  
+After everything worked locally, standing up the hosted path took longer than I expected. Coordinating **two deploy targets** (static SPA + long-running API), **`VITE_API_URL` at build time**, **`CORS_ORIGINS`**, Neon **`DATABASE_URL`** / TLS (`asyncpg` vs libpq query params), migrations + seed against prod, and debugging **500s that showed up as “CORS” in the browser** added real overhead.
+
+I chose **Neon** for the hosted database because I had **hit the limit on free Supabase projects** — Neon stayed within free tier and pgvector worked fine once migrations ran against the right connection string.
 
 ---
 
