@@ -47,6 +47,7 @@ async def lifespan(app: FastAPI):
         environment=settings.environment,
         llm_provider=settings.llm_provider,
         cors_allow_origins=_cors_allow,
+        database_ssl=bool(settings.database_connect_args.get("ssl")),
     )
     yield
     # Dispose the connection pool cleanly on shutdown

@@ -298,8 +298,25 @@ Commit `runtime.txt`, redeploy, and confirm build logs show **Python 3.12**, not
 Common causes:
 
 1. **`DATABASE_URL`** — Use **`postgresql+asyncpg://…`** for this app (Neon’s dashboard often copies `postgresql://…`; the backend coerces that automatically, but a wrong driver prefix elsewhere will still break).
-2. **`CORS_ORIGINS`** — Must be full origins with scheme, comma-separated, e.g. `https://review-pulse-delta.vercel.app`. Invalid values can fail validation at startup.
-3. **Logs** — Open the service **Logs** tab for the Python traceback (not only the build log).
+2. **TLS to Neon / hosted Postgres** — The API enables **`ssl=True`** for asyncpg automatically when the host looks like Neon (`.neon.tech`), Supabase (`.supabase.co`, `pooler.supabase.com`), or Render Postgres (`postgres.render.com`), or when the URL contains `sslmode=require`. If you ever need to force it on/off, set **`DATABASE_SSL`** = `true` or `false` on Render.
+3. **`CORS_ORIGINS`** — Must be full origins with scheme, comma-separated, e.g. `https://review-pulse-delta.vercel.app`. Invalid values can fail validation at startup.
+4. **Logs** — Open the service **Logs** tab for the Python traceback (not only the build log).
+
+### Login returns **500** or browser shows **CORS** on `/auth/login`
+
+If the Neon **Tables** UI shows **“0 tables”** in `public`, migrations were never applied to that database — this alone causes login to crash.
+
+**Fix (one-time):** From your machine, point `DATABASE_URL` at the **same** Neon connection string Render uses (pooler URL is fine). Then:
+
+```bash
+cd backend
+alembic upgrade head
+python -m scripts.seed_db   # demo accounts (maya@demo.com / Demo1234) + books + reviews
+```
+
+Use `postgresql://` or `postgresql+asyncpg://`; the app normalizes the scheme. Neon often appends `?sslmode=require` — that is fine: the backend removes `sslmode` for asyncpg and turns on TLS via `connect_args`, including **`alembic upgrade head`**. After `upgrade head`, refresh Neon Tables — you should see `authors`, `books`, `reviews`, etc.
+
+Often the real failure is **database access** (missing TLS, wrong `DATABASE_URL`, or schema not migrated). The browser may still report **CORS** if the error response does not include expected headers. Fix the traceback in Render logs first. After deploy, confirm startup logs include **`database_ssl=True`** when using Neon. Demo users require **`seed_db`** (or registration) after migrations.
 
 ### Browser: **CORS policy** / **Failed to fetch** (Vercel → Render)
 
@@ -311,7 +328,7 @@ CORS_ORIGINS=https://review-pulse-delta.vercel.app
 
 Use the **exact** production URL (scheme + host, **no** path). A trailing slash in the env value is OK — the API strips it so it matches the browser `Origin` header. For extra origins (e.g. preview deploys), use a comma-separated list. **Save**, then **restart/redeploy** the service.
 
-After redeploy, check Render logs for **`cors_allow_origins`** — your Vercel URL should appear **without** a trailing slash. If the list only shows localhost, `CORS_ORIGINS` was empty or misnamed (`CORS_ORIGINS`, not `ALLOWED_ORIGINS`).
+After redeploy, check Render logs for **`cors_allow_origins`** — your Vercel URL should appear **without** a trailing slash. If the list only shows localhost, `CORS_ORIGINS` was empty or misnamed (`CORS_ORIGINS`, not `ALLOWED_ORIGINS`). Also check **`database_ssl`** (boolean): it should be **`True`** when the API is pointed at Neon or similar.
 
 ### Vercel: **404** on refresh (`/login`, `/books/…`)
 

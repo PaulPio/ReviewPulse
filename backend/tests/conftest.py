@@ -39,8 +39,8 @@ from app.models.author import Author
 from app.models.book import Book
 from app.models.review import Review
 
-# Derive test DB URL by swapping the DB name
-_db_url = settings.database_url
+# Derive test DB URL by swapping the DB name (use asyncpg-safe DSN, no libpq sslmode=)
+_db_url = settings.database_url_asyncpg
 TEST_DATABASE_URL = (
     _db_url.rsplit("/reviewpulse", 1)[0] + "/reviewpulse_test"
     if "/reviewpulse" in _db_url
@@ -51,7 +51,12 @@ TEST_DATABASE_URL = (
 # own connection on the current event loop and closes it on session exit. This
 # prevents asyncpg "attached to a different loop" errors when pytest-asyncio
 # creates a fresh function-scoped event loop per test.
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+test_engine = create_async_engine(
+    TEST_DATABASE_URL,
+    echo=False,
+    poolclass=NullPool,
+    connect_args=settings.database_connect_args,
+)
 TestSessionLocal = async_sessionmaker(
     bind=test_engine,
     class_=AsyncSession,
@@ -68,13 +73,19 @@ def create_tables():
     decoupled from the per-test event loops used by async fixtures.
     """
     async def _create():
-        engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+        engine = create_async_engine(
+            TEST_DATABASE_URL, echo=False, poolclass=NullPool,
+            connect_args=settings.database_connect_args,
+        )
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         await engine.dispose()
 
     async def _drop():
-        engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
+        engine = create_async_engine(
+            TEST_DATABASE_URL, echo=False, poolclass=NullPool,
+            connect_args=settings.database_connect_args,
+        )
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
         await engine.dispose()

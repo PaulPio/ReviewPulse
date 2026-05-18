@@ -6,7 +6,8 @@ All settings are read from environment variables (or a .env file).
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import Literal
+from typing import Any, Literal
+from urllib.parse import parse_qsl, urlparse, urlencode, urlunparse
 
 from pydantic import AnyHttpUrl, Field, TypeAdapter, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,6 +23,68 @@ def _strip_trailing_dotenv_comment(value: object) -> object:
 def _normalize_browser_origin(url: AnyHttpUrl) -> str:
     """Browsers send `Origin` without a trailing slash; CORS match is exact."""
     return str(url).rstrip("/")
+
+
+def _database_hostname(database_url: str) -> str:
+    """Parse hostname from a Postgres URL (handles passwords with special chars)."""
+    u = database_url.strip()
+    for prefix in ("postgresql+asyncpg://", "postgresql://", "postgres://"):
+        if u.startswith(prefix):
+            normalized = "postgresql://" + u[len(prefix) :]
+            break
+    else:
+        normalized = u if "://" in u else f"postgresql://{u}"
+    try:
+        parsed = urlparse(normalized)
+        return (parsed.hostname or "").lower()
+    except Exception:
+        return ""
+
+
+# Libpq query keys Neon/psql URIs often include; asyncpg.connect() rejects these kwargs.
+_ASYNCPG_DROP_QUERY_KEYS = frozenset({"sslmode", "channel_binding"})
+
+
+def sanitize_database_url_for_asyncpg(database_url: str) -> str:
+    """
+    Remove libpq-only query parameters from the DSN.
+
+    SQLAlchemy's asyncpg dialect forwards URL query options to ``asyncpg.connect()``,
+    which does not accept ``sslmode`` / ``channel_binding`` — use ``connect_args``
+    ``ssl=...`` instead (see ``database_connect_args``).
+    """
+    parsed = urlparse(database_url.strip())
+    if not parsed.query:
+        return database_url.strip()
+    pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    filtered = [(k, v) for k, v in pairs if k.lower() not in _ASYNCPG_DROP_QUERY_KEYS]
+    new_query = urlencode(filtered)
+    return urlunparse(parsed._replace(query=new_query))
+
+
+def _infer_asyncpg_ssl(database_url: str) -> bool:
+    """
+    asyncpg does not always honor libpq `sslmode=` in the URL string.
+    Hosted Postgres (Neon, Supabase pooler, Render-managed Postgres) expects TLS
+    from external clients — enable explicit SSL when the DSN or host implies it.
+    """
+    lower = database_url.lower()
+    if "sslmode=require" in lower or "sslmode=verify-full" in lower:
+        return True
+    if "sslmode=disable" in lower or "ssl=false" in lower:
+        return False
+
+    host = _database_hostname(database_url)
+    if not host or host in ("localhost", "127.0.0.1", "::1"):
+        return False
+
+    hosted_markers = (
+        ".neon.tech",
+        ".supabase.co",
+        "pooler.supabase.com",
+        "postgres.render.com",
+    )
+    return any(m in host for m in hosted_markers)
 
 
 class Settings(BaseSettings):
@@ -56,6 +119,8 @@ class Settings(BaseSettings):
     database_url: str = Field(
         default="postgresql+asyncpg://postgres:postgres@localhost:5432/reviewpulse"
     )
+    # None = auto from DATABASE_URL; True/False override (env DATABASE_SSL).
+    database_ssl: bool | None = Field(default=None, validation_alias="DATABASE_SSL")
 
     # Supabase (used for auth + optional direct DB access)
     supabase_url: str = ""
@@ -194,6 +259,21 @@ class Settings(BaseSettings):
             parts = [o.strip() for o in raw.split(",") if o.strip()]
             parsed = TypeAdapter(list[AnyHttpUrl]).validate_python(parts)
         return [_normalize_browser_origin(u) for u in parsed]
+
+    @computed_field
+    @property
+    def database_connect_args(self) -> dict[str, Any]:
+        """Passed to SQLAlchemy/asyncpg (e.g. TLS for Neon from Render)."""
+        if self.database_ssl is False:
+            return {}
+        if self.database_ssl is True:
+            return {"ssl": True}
+        return {"ssl": True} if _infer_asyncpg_ssl(self.database_url) else {}
+
+    @property
+    def database_url_asyncpg(self) -> str:
+        """DSN safe for asyncpg (no ``sslmode`` / libpq-only query keys)."""
+        return sanitize_database_url_for_asyncpg(self.database_url)
 
 
 @lru_cache

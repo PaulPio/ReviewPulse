@@ -13,7 +13,7 @@ from app.db.base import Base
 from app.models import *  # noqa: F401, F403
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", settings.database_url_asyncpg)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -36,7 +36,11 @@ def do_run_migrations(connection):
 
 async def run_async_migrations():
     from sqlalchemy.ext.asyncio import create_async_engine
-    connectable = create_async_engine(settings.database_url, poolclass=pool.NullPool)
+    connectable = create_async_engine(
+        settings.database_url_asyncpg,
+        poolclass=pool.NullPool,
+        connect_args=settings.database_connect_args,
+    )
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
     await connectable.dispose()
